@@ -12,3 +12,7 @@ def index():
     else:
         welcome = None
     return render_template("index.html", welcome=welcome)
+
+@home.route("/new_message")
+def message():
+    return render_template("new_message.html")
