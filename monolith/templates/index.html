@@ -37,14 +37,14 @@
       </div>
     </nav>
     <!-- <div class="card mx-auto rounded mt-5" style= "width: 48rem; height:60%; background-color:whitesmoke;"> -->
-      <div class="container " style="padding-top: 11rem;">
+      <div class="container " style="margin-top: 11rem;">
         <div class="row">
           <div class="col text-center">
       <h2 id=title class="display-5 text-center ">Message in a Bottle</h1>
       {% if current_user.is_authenticated %}
       <p class="lead text-center">Hi {{ current_user.firstname }}!</p>
       <h4 style="color:#3C89E5;">{{ welcome }}</h4>
-              <a href="/logout" role="button" class="btn btn-outline-danger mt-2">Log Out</a>
+              <a href="/logout" role="button" class="btn btn-light mt-2" style="background-color: #D35E5E;">Log Out</a>
           
             {% else %}
       <p class="lead text-center">Hi Anonymous</p>
