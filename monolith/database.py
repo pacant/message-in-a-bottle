@@ -37,3 +37,15 @@ class User(db.Model):
     def get_id(self):
         return self.id
 
+class Message(db.Model):
+
+    __tablename__ = 'message'
+
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    text = db.Column(db.Unicode(128))
+    sender = db.Column(db.Unicode(128))
+    receiver = db.Column(db.Unicode(128))
+    draft = db.Column(db.Boolean, default = False)
+    def __init__(self, *args, **kw):
+        super(Message, self).__init__(*args, **kw)
