@@ -5,7 +5,7 @@
 
 <body>
   <div class="container">
-    {% if sent_msgs and rcv_msgs %}
+    {% if sent_msgs or rcv_msgs %}
         {% if view %}
             {% for i in sent_msgs %}
                 <li>{{ i }}</li>
