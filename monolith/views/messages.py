@@ -21,4 +21,4 @@ def chooseRecipient():
         return render_template("recipients.html", recipients=recipients)
     if request.method == "POST":
         recipient = request.form.get("select1")
-        return render_template("index.html", recipient=recipient)
+        return render_template("send-message.html", recipient=recipient)
