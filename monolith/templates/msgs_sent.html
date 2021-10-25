@@ -1,0 +1,17 @@
+<html lang="en">
+<head>
+    <title>Sent Messages</title>
+</head>
+
+<body>
+  <div class="container">
+    {% if msgs_sent  %}
+        {% for i in msgs_sent %}
+            <li>{{ i.text }}</li>
+        {% endfor %}
+    {% else %}
+         <p>No messages sent !</p>
+    {% endif %} 
+  </div>
+</body>
+</html>

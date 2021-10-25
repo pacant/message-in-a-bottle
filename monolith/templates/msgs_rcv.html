@@ -1,0 +1,17 @@
+<html lang="en">
+<head>
+    <title>Received Messages</title>
+</head>
+
+<body>
+  <div class="container">
+    {% if msgs_rcv %}
+        {% for i in msgs_rcv %}
+            <li>{{ i.text }}</li>
+        {% endfor %}
+    {% else %}
+         <p>No messages received !</p>
+    {% endif %} 
+  </div>
+</body>
+</html>

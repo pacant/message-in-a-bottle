@@ -3,6 +3,7 @@ from dateutil import parser
 from flask.templating import render_template
 from monolith.background import send_message
 import datetime
+
 messages = Blueprint('messages', __name__)
 
 
