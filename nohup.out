@@ -1623,3 +1623,78 @@ SIGHUP not supported: Restarting with SIGHUP is unstable on this platform!
 [2021-10-24 17:52:21,711: ERROR/MainProcess] Process 'ForkPoolWorker-3' pid:97266 exited with 'exitcode 70'
 [2021-10-24 17:52:21,722: ERROR/MainProcess] Process 'ForkPoolWorker-2' pid:97265 exited with 'exitcode 70'
 [2021-10-24 17:52:21,733: ERROR/MainProcess] Process 'ForkPoolWorker-1' pid:97246 exited with 'exitcode 70'
+Usage: celery [OPTIONS] COMMAND [ARGS]...
+
+Error: Invalid value for "-A" / "--app": 
+Unable to load celery application.
+While trying to load the module monolith.background the following error occurred:
+Traceback (most recent call last):
+  File "/Users/antoniopace/message-in-a-bottle/monolith/venv/lib/python3.9/site-packages/celery/bin/celery.py", line 53, in convert
+    return find_app(value)
+  File "/Users/antoniopace/message-in-a-bottle/monolith/venv/lib/python3.9/site-packages/celery/app/utils.py", line 384, in find_app
+    sym = symbol_by_name(app, imp=imp)
+  File "/Users/antoniopace/message-in-a-bottle/monolith/venv/lib/python3.9/site-packages/kombu/utils/imports.py", line 56, in symbol_by_name
+    module = imp(module_name, package=package, **kwargs)
+  File "/Users/antoniopace/message-in-a-bottle/monolith/venv/lib/python3.9/site-packages/celery/utils/imports.py", line 100, in import_from_cwd
+    return imp(module, package=package)
+  File "/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 790, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/Users/antoniopace/message-in-a-bottle/monolith/__init__.py", line 1, in <module>
+    from .app import create_app
+  File "/Users/antoniopace/message-in-a-bottle/monolith/app.py", line 7, in <module>
+    from monolith.views import blueprints
+  File "/Users/antoniopace/message-in-a-bottle/monolith/views/__init__.py", line 4, in <module>
+    from .messages import messages
+  File "/Users/antoniopace/message-in-a-bottle/monolith/views/messages.py", line 4, in <module>
+    from monolith.background import send_message
+  File "/Users/antoniopace/message-in-a-bottle/monolith/background.py", line 3
+    <<<<<<< HEAD
+    ^
+SyntaxError: invalid syntax
+
+ 
+ -------------- celery@MBPro.local v5.1.2 (sun-harmonics)
+--- ***** ----- 
+-- ******* ---- macOS-10.16-x86_64-i386-64bit 2021-10-25 11:48:46
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         monolith.background:0x7f974e321a30
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost:6379/
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . monolith.background.send_message
+
+[2021-10-25 11:48:46,406: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 2.00 seconds... (1/100)
+
+[2021-10-25 11:48:48,417: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 4.00 seconds... (2/100)
+
+[2021-10-25 11:48:52,428: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 6.00 seconds... (3/100)
+
+[2021-10-25 11:48:58,443: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 8.00 seconds... (4/100)
+
+[2021-10-25 11:49:06,471: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 10.00 seconds... (5/100)
+
+[2021-10-25 11:49:16,496: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 12.00 seconds... (6/100)
+
+[2021-10-25 11:49:28,541: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
+Trying again in 14.00 seconds... (7/100)
+
