@@ -1,5 +1,5 @@
 <form class=""method="POST" action="">
-    <select name="select1">
+    <select name="recipient" multiple>
         {% for rec in recipients: %}
         <option value={{rec.email}}>{{rec.email}}</option>
         {% endfor %}
