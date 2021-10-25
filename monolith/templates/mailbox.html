@@ -1,0 +1,27 @@
+<html lang="en">
+<head>
+    <title>Mailbox</title>
+</head>
+
+<body>
+  <div class="container">
+    {% if sent_msgs and rcv_msgs %}
+        {% if view %}
+            {% for i in sent_msgs %}
+                <li>{{ i }}</li>
+            {% endfor %}
+        {% else %}
+            {% for i in rcv_msgs %}
+                <li>{{ i }}</li>
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        {% if view %}
+            <p>No message sent !</p>
+        {% else %}
+            <p>No message received !</p>
+        {% endif %}
+    {% endif %} 
+  </div>
+</body>
+</html>
