@@ -1,17 +1,42 @@
 <html lang="en">
-<head>
-    <title>Received Messages</title>
-</head>
+    <head>
+        <title>Received Messages</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      </head>
 
-<body>
-  <div class="container">
-    {% if msgs_rcv %}
-        {% for i in msgs_rcv %}
-            <li>{{ i.text }}</li>
-        {% endfor %}
-    {% else %}
-         <p>No messages received !</p>
-    {% endif %} 
-  </div>
-</body>
+      <body>
+
+        <div class="container">
+          <h2>Received Messages</h2>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Text</th>
+                <th>Sender</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% if msgs_rcv  %}
+                    {% for i in msgs_rcv %}
+                        <tr>
+                            <td>{{ i.text }}</td>
+                            <td>{{ i.id_sender }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <p>No messages received !</p>
+                {% endif %} 
+            </tbody>
+          </table>
+        </div>
+        
+        </body>
+
 </html>
+
+
