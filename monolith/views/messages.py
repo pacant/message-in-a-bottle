@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, redirect
 from dateutil import parser
 from flask.templating import render_template
 from monolith.background import send_message
+from monolith.auth import current_user
 import datetime
 messages = Blueprint('messages', __name__)
 
@@ -13,7 +14,12 @@ def sendMessage():
         data = request.form
         print(data)
         date = parser.parse(request.form['date']+'+0200')
-        result = send_message.apply_async((data,), eta = date)
+        message = {
+            "text":data['text'],
+            "id_sender":current_user.id,
+            "receiver":data['receiver']
+        }
+        result = send_message.apply_async((message,), eta = date)
         return render_template("send_message.html", message_ok = True)
     else:
         return render_template("send_message.html")
