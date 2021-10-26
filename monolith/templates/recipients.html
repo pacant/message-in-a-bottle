@@ -1,0 +1,8 @@
+<form class=""method="POST" action="">
+    <select name="select1">
+        {% for rec in recipients: %}
+        <option value={{rec.email}}>{{rec.email}}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-light" style="background-color: #89A8C4;">Choose</button>
+</form>

@@ -4,6 +4,7 @@ from dateutil import parser
 from flask.templating import render_template
 from monolith.background import send_message
 from monolith.auth import current_user
+
 messages = Blueprint('messages', __name__)
 
 
@@ -45,3 +46,12 @@ def save_message(data):
     db.session.commit()
 
     return message.id
+@messages.route("/message/recipients", methods =["GET","POST"])
+def chooseRecipient():
+    if request.method == "GET":
+        email = session["email"]
+        recipients = db.session.query(User).filter(User.email != email)
+        return render_template("recipients.html", recipients=recipients)
+    if request.method == "POST":
+        recipient = request.form.get("select1")
+        return render_template("index.html", recipient=recipient)
