@@ -35,13 +35,13 @@
             </li>
             
             <li class="nav-item">
-              <a class="nav-link" href="/mailbox/sent">Inbox</a>
+              <a class="nav-link" href="/mailbox/received">Inbox</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/mailbox/received">Outbox</a>
+              <a class="nav-link" href="/mailbox/sent">Outbox</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link">Profile</a>
+              <a class="nav-link" style="color: #89A8C4;"><b>{{current_user.firstname}}</b></a>
             </li>
             {% else %}
             <li class="nav-item">
@@ -64,7 +64,7 @@
     </nav>
     
     <!-- <div class="card mx-auto rounded mt-5" style= "width: 48rem; height:60%; background-color:whitesmoke;"> -->
-      <div class="container " style="margin-top: 12%;">
+      <div class="container" style="margin-top: 12%;">
         <div class="row">
           <div class="col text-center">
       <h2 id=title class="display-5 text-center ">Message in a Bottle</h1>

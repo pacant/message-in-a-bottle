@@ -28,7 +28,7 @@ def create_user():
             new_user.set_password(form.password.data)
             db.session.add(new_user)
             db.session.commit()
-            return redirect('/users')
+            return redirect('/')
     elif request.method == 'GET':
         return render_template('create_user.html', form=form)
     else:
