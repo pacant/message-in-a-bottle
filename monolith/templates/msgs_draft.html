@@ -13,7 +13,7 @@
 
         <div class="container">
             <h2>Draft Messages</h2>
-                {% if msgs_draft  %}
+                {% if draft_msgs  %}
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -22,7 +22,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for i in msgs_draft %}
+                            {% for i in draft_msgs %}
                                 <tr>
                                     <td>{{ i[0].text }}</td>
                                     <td>{{ i[1].email }}</td>
