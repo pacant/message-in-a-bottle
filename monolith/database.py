@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy.orm import relationship
+from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
@@ -44,8 +46,8 @@ class Message(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     text = db.Column(db.Unicode(128))
-    id_sender = db.Column(db.Unicode(128))
-    id_receiver = db.Column(db.Unicode(128))
+    id_sender = db.Column(db.Unicode(128), ForeignKey('user.id'))
+    id_receiver = db.Column(db.Unicode(128), ForeignKey('user.id'))
     draft = db.Column(db.Boolean, default = False)
     delivered = db.Column(db.Boolean, default = False)
     

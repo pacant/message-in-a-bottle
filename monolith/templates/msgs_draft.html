@@ -1,6 +1,6 @@
 <html lang="en">
     <head>
-        <title>Received Messages</title>
+        <title>Draft Messages</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -12,17 +12,17 @@
       <body>
 
         <div class="container">
-            <h2>Received Messages</h2>
-                {% if msgs_rcv  %}
+            <h2>Draft Messages</h2>
+                {% if msgs_draft  %}
                     <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>Text</th>
-                                <th>Sender</th>
+                                <th>Receiver</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for i in msgs_rcv %}
+                            {% for i in msgs_draft %}
                                 <tr>
                                     <td>{{ i[0].text }}</td>
                                     <td>{{ i[1].email }}</td>
@@ -31,7 +31,7 @@
                         </tbody>
                     </table>
                 {% else %}
-                    <p>No messages received !</p>
+                    <p>No draft messages !</p>
                 {% endif %} 
         </div>
         

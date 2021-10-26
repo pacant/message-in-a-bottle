@@ -12,31 +12,30 @@
       <body>
 
         <div class="container">
-          <h2>Sent Messages</h2>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Text</th>
-                <th>Receiver</th>
-              </tr>
-            </thead>
-            <tbody>
+            <h2>Sent Messages</h2>
                 {% if msgs_sent  %}
-                    {% for i in msgs_sent %}
-                        <tr>
-                            <td>{{ i.text }}</td>
-                            <td>{{ i.id_receiver }}</td>
-                        </tr>
-                    {% endfor %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Text</th>
+                                <th>Receiver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in msgs_sent %}
+                                <tr>
+                                    <td>{{ i[0].text }}</td>
+                                    <td>{{ i[1].email }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 {% else %}
                     <p>No messages sent !</p>
                 {% endif %} 
-            </tbody>
-          </table>
         </div>
         
         </body>
-
 </html>
 
 
