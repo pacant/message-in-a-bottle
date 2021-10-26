@@ -24,7 +24,7 @@
                         <tbody>
                             {% for i in msgs_rcv %}
                                 <tr>
-                                    <td>{{ i[0].text }}</td>
+                                    <td><a href="/message/{{i[0].id}}">{{ i[0].text }}</a></td>
                                     <td>{{ i[1].email }}</td>
                                 </tr>
                             {% endfor %}
