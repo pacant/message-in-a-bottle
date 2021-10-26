@@ -18,7 +18,7 @@ def sendMessage():
             message = {
                 "text":data['text'],
                 "id_sender":current_user.id,
-                "receiver":data['receiver']
+                "receiver":request.form.get("recipient")
             }
             result = send_message.apply_async((message,), eta = date)
             return render_template("send_message.html", message_ok = True)
@@ -36,5 +36,5 @@ def chooseRecipient():
         recipients = db.session.query(User).filter(User.email != email)
         return render_template("recipients.html", recipients=recipients)
     if request.method == "POST":
-        recipient = request.form.get("select1")
-        return render_template("send-message.html", recipient=recipient)
+        recipient = request.form.get("recipient")
+        return render_template("send_message.html", recipient=recipient)
