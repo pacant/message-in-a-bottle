@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect
+from flask import Blueprint, request, redirect, abort
 from monolith.database import Message, db, User
 from dateutil import parser
 from flask.globals import current_app
@@ -60,3 +60,20 @@ def chooseRecipient():
     if request.method == "POST":
         recipient = request.form.get("recipient")
         return render_template("send_message.html", recipient=recipient)
+
+
+@messages.route('/message/<message_id>')
+def viewMessage(message_id):
+    if current_user is None or not hasattr(current_user, 'id'):
+        return redirect('/')
+    try:
+        message = db.session.query(Message).filter(
+            Message.id == int(message_id)
+        ).join(User, Message.id_sender==User.id).first()
+    except:
+        abort(500)
+    
+    if message is None:
+        abort(404)
+    else:
+        return render_template("message.html", sender=None, text=message, date=None)
