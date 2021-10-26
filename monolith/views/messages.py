@@ -77,6 +77,14 @@ def viewMessage(message_id):
     
     if message is None:
         abort(404)
+    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
+        abort(403)
     else:
-        print(message)
-        return render_template("message.html", sender={'firstname':message.User.firstname, 'lastname':message.User.lastname, 'email':message.User.email}, text=message.Message.text, date='-')
+        recipient=db.session.query(User).filter(
+            User.id == message.Message.id_receiver
+        ).first()
+        return render_template("message.html",
+                                sender=message.User,
+                                recipient=recipient,
+                                message=message.Message,
+                                date='-')
