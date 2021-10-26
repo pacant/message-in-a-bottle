@@ -1698,3 +1698,30 @@ Trying again in 12.00 seconds... (6/100)
 [2021-10-25 11:49:28,541: ERROR/MainProcess] consumer: Cannot connect to redis://localhost:6379//: Error 61 connecting to localhost:6379. Connection refused..
 Trying again in 14.00 seconds... (7/100)
 
+ 
+ -------------- celery@MBPro.local v5.1.2 (sun-harmonics)
+--- ***** ----- 
+-- ******* ---- macOS-10.16-x86_64-i386-64bit 2021-10-26 15:47:31
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         monolith.background:0x7fe01dd40910
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost:6379/
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . monolith.background.send_message
+
+[2021-10-26 15:47:31,908: INFO/MainProcess] Connected to redis://localhost:6379//
+[2021-10-26 15:47:31,945: INFO/MainProcess] mingle: searching for neighbors
+[2021-10-26 15:47:33,161: INFO/MainProcess] mingle: all alone
+[2021-10-26 15:47:33,192: INFO/MainProcess] celery@MBPro.local ready.
+
+worker: Hitting Ctrl+C again will terminate all running tasks!
+
+worker: Warm shutdown (MainProcess)
