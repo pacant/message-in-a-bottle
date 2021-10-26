@@ -11,9 +11,16 @@
 <body>
 
 <div class="container">
-  <p>Message from: {{sender}}</p>
-  <p>Date: {{date}}</p>
-  <p>{{text}}</p>
+  <div class="row">
+    <div class="col">
+      <p>From: {{sender.firstname}} {{sender.lastname}} &lt;{{sender.email}}&gt;</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <p>{{text}}</p>
+    </div>
+  </div>
 </div>
 
 </body>

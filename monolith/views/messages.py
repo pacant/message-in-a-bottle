@@ -69,7 +69,7 @@ def viewMessage(message_id):
     if current_user is None or not hasattr(current_user, 'id'):
         return redirect('/')
     try:
-        message = db.session.query(Message).filter(
+        message = db.session.query(Message, User).filter(
             Message.id == int(message_id)
         ).join(User, Message.id_sender==User.id).first()
     except:
@@ -78,4 +78,5 @@ def viewMessage(message_id):
     if message is None:
         abort(404)
     else:
-        return render_template("message.html", sender=None, text=message, date=None)
+        print(message)
+        return render_template("message.html", sender={'firstname':message.User.firstname, 'lastname':message.User.lastname, 'email':message.User.email}, text=message.Message.text, date='-')
