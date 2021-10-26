@@ -24,8 +24,8 @@
                 {% if msgs_rcv  %}
                     {% for i in msgs_rcv %}
                         <tr>
-                            <td>{{ i.text }}</td>
-                            <td>{{ i.email }}</td>
+                            <td>{{ i[0].text }}</td>
+                            <td>{{ i[1].email }}</td>
                         </tr>
                     {% endfor %}
                 {% else %}

@@ -10,9 +10,7 @@ mailbox = Blueprint('mailbox', __name__)
 @mailbox.route('/mailbox/sent', methods = ['GET'])
 def see_sent_messages(): 
     if request.method == 'GET':
-        #msgs_sent = db.session.query(Message, User).join(User, and_(Message.id_sender==User.id)).filter(Message.id_sender==current_user.id)
         msgs_sent = db.session.query(Message, User).filter(Message.id_sender==User.id).filter(Message.id_sender==current_user.id).all()
-        print(msgs_sent)
         return render_template('msgs_sent.html', msgs_sent=msgs_sent)
     else:
         return render_template('msgs_sent.html')
@@ -21,8 +19,7 @@ def see_sent_messages():
 @mailbox.route('/mailbox/received', methods = ['GET'])
 def see_received_messages():
     if request.method == 'GET':
-        msgs_rcv = db.session.query(Message, User).join(User, and_(Message.id_receiver==User.id)).filter(Message.id_receiver==current_user.id)
-        print(msgs_rcv)
+        msgs_rcv = db.session.query(Message, User).filter(Message.id_receiver==User.id).filter(Message.id_receiver==current_user.id).all()
         return render_template('msgs_rcv.html', msgs_rcv=msgs_rcv)
     else:
         return render_template('msgs_rcv.html')
