@@ -29,7 +29,7 @@ def sendMessage():
 def draft():
     data = request.form
     save_message(data)
-    return render_template("send_message.html", draft_ok=True)
+    return redirect('/mailbox/draft')
 
 
 def save_message(data):
@@ -41,16 +41,17 @@ def save_message(data):
     message.id_receiver = id_receiver
     message.id_sender = current_user.id
     message.draft = True if 'draft' in data else False
-
+    print(message.draft)
     db.session.add(message)
     db.session.commit()
 
     return message.id
-@messages.route("/message/recipients", methods =["GET","POST"])
+
+
+@messages.route("/message/recipients", methods=["GET", "POST"])
 def chooseRecipient():
     if request.method == "GET":
-        email = session["email"]
-        recipients = db.session.query(User).filter(User.email != email)
+        recipients = db.session.query(User).filter(User.id != current_user.id)
         return render_template("recipients.html", recipients=recipients)
     if request.method == "POST":
         recipient = request.form.get("select1")
