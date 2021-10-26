@@ -86,10 +86,7 @@
       <!-- <img src="https://i.postimg.cc/BZB9fgxv/MIABblack.png" style="width: 55%; margin-bottom:10px"> -->
 
             {% if auth %}
-            <h4>
-              {{welcome}}
-            </h4>
-            <p class="lead text-center mb-2">Hi {{ current_user.firstname }}!</p>
+            <p class="lead text-center mb-2"><strong>Hi {{ current_user.firstname }}!</strong></p>
               <a href="/logout" role="button" class="btn mt-2" style="background-color: #D35E5E;">Log Out</a>
             {% else %}
             <p class="lead text-center">Hi Anonymous</p>
