@@ -22,7 +22,8 @@ def see_sent_messages():
 def see_received_messages():
     if request.method == 'GET':
         msgs_rcv = db.session.query(Message, User).filter(
-            Message.id_sender == User.id).filter(Message.id_receiver == current_user.id).all()
+            Message.id_sender == User.id).filter(
+                Message.id_receiver == current_user.id).filter(Message.delivered == True).all()
         return render_template('msgs_rcv.html', msgs_rcv=msgs_rcv)
     else:
         return render_template('msgs_rcv.html')
