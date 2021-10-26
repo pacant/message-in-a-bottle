@@ -19,7 +19,7 @@
     <body>
       <nav class="navbar navbar-expand-lg navbar-light" style="background-color:#FFFFFF;">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#"><img src="https://i.postimg.cc/hPKRcRYH/Senza-titolo-7.png" width="30" height="30" alt=""></a>
+          <a class="navbar-brand" href="#"><img src="https://i.postimg.cc/D0fVHkDT/Senza-titolo-8.jpg" width="30" height="30" alt=""></a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -54,7 +54,7 @@
               <h4 class="mb-4" style="margin-left: 3%;">Choose a recipient for your message</h4>
               {% for rec in recipients: %}
               <input type="hidden" name="extra_submit_param" value="extra_submit_value">
-              <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50">
+              <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
                   {{rec.email}}
               </button>
               {% endfor %}
