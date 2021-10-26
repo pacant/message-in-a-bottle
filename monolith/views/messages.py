@@ -22,7 +22,9 @@ def sendMessage():
             result = send_message.apply_async((id_message,), eta=date)
             return render_template("send_message.html", message_ok=True)
         else:
-            return render_template("send_message.html")
+            recipient_message = request.args.get('recipient')
+            recipient = recipient_message if recipient_message is not None else ''
+            return render_template("send_message.html", recipient=recipient)
 
     else:
         return redirect('/')

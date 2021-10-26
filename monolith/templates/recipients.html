@@ -26,7 +26,7 @@
         </div>  
     </div> -->
     <div class="list-group" style="margin-left:34%; margin-top: 11%;">
-        <form method="post" action="/message/recipients" class="inline">
+        <form method="get" action="/message/send" class="inline">
             <h4 class="mb-4 ml-5">Choose a recipient for your message</h4>
             {% for rec in recipients: %}
             <input type="hidden" name="extra_submit_param" value="extra_submit_value">
