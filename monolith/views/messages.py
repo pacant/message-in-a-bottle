@@ -30,9 +30,7 @@ def sendMessage():
 @messages.route("/message/recipients", methods =["GET","POST"])
 def chooseRecipient():
     if request.method == "GET":
-        print("ciao")
         email = current_user.email
-        print(email)
         recipients = db.session.query(User).filter(User.email != email)
         return render_template("recipients.html", recipients=recipients)
     if request.method == "POST":
