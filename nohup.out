@@ -1752,3 +1752,30 @@ worker: Warm shutdown (MainProcess)
 worker: Hitting Ctrl+C again will terminate all running tasks!
 
 worker: Warm shutdown (MainProcess)
+ 
+ -------------- celery@host-131-114-212-213.m.unipi.it v5.1.2 (sun-harmonics)
+--- ***** ----- 
+-- ******* ---- macOS-10.16-x86_64-i386-64bit 2021-10-26 17:17:28
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         monolith.background:0x7fb44ab299a0
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost:6379/
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . monolith.background.send_message
+
+[2021-10-26 17:17:28,288: INFO/MainProcess] Connected to redis://localhost:6379//
+[2021-10-26 17:17:28,308: INFO/MainProcess] mingle: searching for neighbors
+[2021-10-26 17:17:29,344: INFO/MainProcess] mingle: all alone
+[2021-10-26 17:17:29,386: INFO/MainProcess] celery@host-131-114-212-213.m.unipi.it ready.
+
+worker: Hitting Ctrl+C again will terminate all running tasks!
+
+worker: Warm shutdown (MainProcess)
