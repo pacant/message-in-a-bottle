@@ -1,16 +1,20 @@
 <html>
   <head>
+    <title>Login</title>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>  
     <style>
       body{
             background-image: url(https://i.postimg.cc/YSgCg909/mare2.jpg);
             background-size: cover;
           }
     </style>
-  </head>
  <body>
   <nav class="navbar navbar-expand-lg navbar-light" style="background-color:#FFFFFF;">
     <div class="container-fluid">
@@ -31,6 +35,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link disabled">Outbox</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled">Drafts</a>
           </li>
           <li class="nav-item">
             <a class="nav-link disabled">Profile</a>
@@ -57,7 +64,7 @@
             {% endfor %}
             </dl>
             <p>
-              <button type="submit" class="btn btn-light" style="background-color: #89A8C4;">Log in</button>
+              <button type="submit" class="btn" style="background-color: #89A8C4;">Log in</button>
           </form>
         </div>
       </div>

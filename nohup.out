@@ -2049,3 +2049,30 @@ Trying again in 22.00 seconds... (11/100)
 worker: Hitting Ctrl+C again will terminate all running tasks!
 
 worker: Warm shutdown (MainProcess)
+ 
+ -------------- celery@MBPro.local v5.1.2 (sun-harmonics)
+--- ***** ----- 
+-- ******* ---- macOS-11.5.2-x86_64-i386-64bit 2021-10-26 22:02:41
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         monolith.background:0x1127a2610
+- ** ---------- .> transport:   redis://localhost:6379//
+- ** ---------- .> results:     redis://localhost:6379/
+- *** --- * --- .> concurrency: 4 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> celery           exchange=celery(direct) key=celery
+                
+
+[tasks]
+  . monolith.background.send_message
+
+[2021-10-26 22:02:41,863: INFO/MainProcess] Connected to redis://localhost:6379//
+[2021-10-26 22:02:41,886: INFO/MainProcess] mingle: searching for neighbors
+[2021-10-26 22:02:42,932: INFO/MainProcess] mingle: all alone
+[2021-10-26 22:02:42,962: INFO/MainProcess] celery@MBPro.local ready.
+
+worker: Hitting Ctrl+C again will terminate all running tasks!
+
+worker: Warm shutdown (MainProcess)

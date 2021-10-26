@@ -29,15 +29,17 @@
             <li class="nav-item">
               <a class="nav-link" href="/message/recipients">New Message</a>
             </li>
-
             <li class="nav-item">
-              <a class="nav-link" href="/mailbox/sent">Inbox</a>
+              <a class="nav-link" href="/mailbox/received">Inbox</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/mailbox/received">Outbox</a>
+              <a class="nav-link" href="/mailbox/sent">Outbox</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link">Profile</a>
+              <a class="nav-link" href="/mailbox/draft">Drafts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" style="color: #89A8C4;"><b>{{current_user.firstname}}</b></a>
             </li>
           </ul>
         </div>
@@ -71,7 +73,7 @@
       </div>
 
 
-          <button type="Submit" value = "submit" class="btn btn-dark" style="background-color: 92C991">Submit</button>
+          <button type="Submit" value = "submit" class="btn" style="background-color: 92C991">Submit</button>
         <button
           type="Submit"
           name="draft"
@@ -81,7 +83,7 @@
           Draft
         </button>
 
-          <a href="/message/recipients" class="btn btn-dark" style="background-color: #E5BE6B;">Choose recipient</a>
+          <a href="/message/recipients" class="btn" style="background-color: #E5BE6B;">Choose recipient</a>
 
 
     </form>
