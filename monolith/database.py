@@ -47,5 +47,7 @@ class Message(db.Model):
     id_sender = db.Column(db.Unicode(128))
     id_receiver = db.Column(db.Unicode(128))
     draft = db.Column(db.Boolean, default = False)
+    delivered = db.Column(db.Boolean, default = False)
+    
     def __init__(self, *args, **kw):
         super(Message, self).__init__(*args, **kw)

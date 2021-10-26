@@ -9,27 +9,22 @@ _APP = None
 
 
 @celery.task
-def send_message(data):
+def send_message(id_message):
     global _APP
     # lazy init
     if _APP is None:
         from monolith.app import create_app
         app = create_app()
         db.init_app(app)
-        message = Message()
 
         with app.app_context():
-            message.text = data['text']
-            id_receiver = db.session.query(User).filter(User.email == data['receiver']).first().id
-            message.id_receiver = id_receiver
-            message.id_sender = data['id_sender']
+            db.session.query(Message).filter(
+                Message.id == id_message).update({"delivered": True})
 
-            db.session.add(message)
             db.session.commit()
-            print(message)
+            print("delivered")
 
     else:
         app = _APP
 
     return []
-

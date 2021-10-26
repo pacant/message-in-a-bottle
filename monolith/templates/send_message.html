@@ -20,6 +20,15 @@
   </div>
 {%endif%}
 
+{% if draft_ok %}
+  <div class="alert alert-success alert-dismissible fade show pt-3" role="alert">
+    Draft saved Correctly!
+    <button type="button" class="close pt-3" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+{%endif%}
+
   <form action='/message/send' method='POST'>
     <div class="form-group ">
         <label for="email">Email address:</label>
@@ -39,8 +48,7 @@ pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}">
 
 
         <button type="Submit" value = "submit" class="btn btn-primary">Submit</button>
-        <button type="button" class="btn btn-danger">set delivery date</button>
-        <button type="button" class="btn btn-success">Draft</button>
+        <button type="Submit" formaction= "/draft" class="btn btn-success">Draft</button>
 
 
   </form>
