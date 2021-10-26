@@ -30,14 +30,9 @@ def sendMessage():
 @messages.route("/message/recipients", methods =["GET","POST"])
 def chooseRecipient():
     if request.method == "GET":
-<<<<<<< HEAD
-        rec = db.session.query(User).filter(User.email != session["email"])
-        return render_template("recipients.html", rec=rec)
-=======
         email = current_user.email
         recipients = db.session.query(User).filter(User.email != email)
         return render_template("recipients.html", recipients=recipients)
     if request.method == "POST":
         recipient = request.form.get("recipient")
         return render_template("send_message.html", recipient=recipient)
->>>>>>> recipients_list
