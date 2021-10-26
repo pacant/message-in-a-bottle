@@ -3,7 +3,6 @@ from flask import Blueprint, request, jsonify, session
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.database import User, Message, db
-from sqlalchemy import and_
 
 mailbox = Blueprint('mailbox', __name__)
 
@@ -23,3 +22,12 @@ def see_received_messages():
         return render_template('msgs_rcv.html', msgs_rcv=msgs_rcv)
     else:
         return render_template('msgs_rcv.html')
+
+
+@mailbox.route('/mailbox/draft', methods = ['GET'])
+def see_draft_messages():
+    if request.method == 'GET':
+        draft_msgs = db.session.query(Message, User).filter(Message.id_receiver==User.id).filter(Message.id_receiver==current_user.id).filter(Message.draft==True).all()
+        return render_template('msgs_draft.html', draft_msgs=draft_msgs)
+    else:
+        return render_template('msgs_draft.html')
