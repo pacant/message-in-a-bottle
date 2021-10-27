@@ -1,13 +1,10 @@
 from flask import Blueprint, request, redirect, abort
 from monolith.database import Message, db, User
 from dateutil import parser
-from flask.globals import current_app
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.background import send_message
-from monolith.auth import current_user
 
-from monolith.database import User, db
 messages = Blueprint('messages', __name__)
 
 
@@ -16,10 +13,10 @@ def sendMessage():
     if current_user is not None and hasattr(current_user, 'id'):
 
         if request.method == 'POST':
-            date = parser.parse(request.form['date']+'+0200')
+            date = parser.parse(request.form['date'] + '+0200')
             data = request.form
             id_message = save_message(data)
-            result = send_message.apply_async((id_message,), eta=date)
+            send_message.apply_async((id_message,), eta=date)
             return render_template("send_message.html", message_ok=True)
         else:
             recipient_message = request.args.get('recipient')
@@ -53,7 +50,7 @@ def save_message(data):
     return message.id
 
 
-@messages.route("/message/recipients", methods =["GET","POST"])
+@messages.route("/message/recipients", methods=["GET", "POST"])
 def chooseRecipient():
     if request.method == "GET":
         email = current_user.email
@@ -68,23 +65,20 @@ def chooseRecipient():
 def viewMessage(message_id):
     if current_user is None or not hasattr(current_user, 'id'):
         return redirect('/')
-    try:
-        message = db.session.query(Message, User).filter(
-            Message.id == int(message_id)
-        ).join(User, Message.id_sender==User.id).first()
-    except:
-        abort(500)
-    
+    message = db.session.query(Message, User).filter(
+        Message.id == int(message_id)
+    ).join(User, Message.id_sender == User.id).first()
+
     if message is None or (int(message.Message.id_receiver) == current_user.id and not message.Message.delivered):
         abort(404)
     elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
         abort(403)
     else:
-        recipient=db.session.query(User).filter(
+        recipient = db.session.query(User).filter(
             User.id == message.Message.id_receiver
         ).first()
         return render_template("message.html",
-                                sender=message.User,
-                                recipient=recipient,
-                                message=message.Message,
-                                date='-')
+                               sender=message.User,
+                               recipient=recipient,
+                               message=message.Message,
+                               date='-')

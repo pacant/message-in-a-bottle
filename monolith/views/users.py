@@ -21,8 +21,7 @@ def create_user():
         if form.validate_on_submit():
             new_user = User()
             form.populate_obj(new_user)
-            """
-            Password should be hashed with some salt. For example if you choose a hash function x, 
+            """ Password should be hashed with some salt. For example if you choose a hash function x,
             where x is in [md5, sha1, bcrypt], the hashed_password should be = x(password + s) where
             s is a secret key.
             """
