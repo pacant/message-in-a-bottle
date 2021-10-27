@@ -75,7 +75,7 @@ def viewMessage(message_id):
     except:
         abort(500)
     
-    if message is None:
+    if message is None or (int(message.Message.id_receiver) == current_user.id and not message.Message.delivered):
         abort(404)
     elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
         abort(403)

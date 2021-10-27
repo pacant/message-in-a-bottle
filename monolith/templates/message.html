@@ -50,26 +50,16 @@
             </div>
         </nav>
 
-<div class="container mt-4" style="height: 50%; background-color: aliceblue;">
-  <div class="row">
-    <div class="col">
-      <p class="mt-1">From: {{sender.firstname}} {{sender.lastname}} &lt;{{sender.email}}&gt;</p>
-      <hr>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <p>To: {{recipient.firstname}} {{recipient.lastname}} &lt;{{recipient.email}}&gt;</p>
-      <hr>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <p>{{message.text}}</p>
-    </div>
-  </div>
-</div>
-
-
-</body>
+    <div class="container mt-4" style="position: relative; align-content: center;">
+      <div class="card" style="min-width: 18rem; max-width: 100%; position: relative;">
+        <div class="card-body">
+          <h5 class="card-title">
+            Bottled by: {{sender.firstname}} {{sender.lastname}} &lt;{{sender.email}}&gt;
+          </h5>
+          <p style="border-bottom: 1px solid black;">To: {{recipient.firstname}} {{recipient.lastname}} &lt;{{recipient.email}}&gt;</p>
+          <p class="card-text">{{message.text}}</p>
+          <a href="#" class="btn btn-primary" style="display: none;">Go somewhere</a>
+        </div>
+      </div>
+  </body>
 </html>
