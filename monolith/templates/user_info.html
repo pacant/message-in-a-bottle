@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Drafts</title>
+    <title>{{current_user.firstname}}</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>  
-    
     <style>
       body{
             background-image: url(https://i.postimg.cc/YSgCg909/mare2.jpg);
@@ -17,6 +16,7 @@
           }
     </style>
   </head>
+
       <body>
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color:#FFFFFF;">
             <div class="container-fluid">
@@ -49,33 +49,41 @@
               </div>
             </div>
         </nav>
+        <div class="card mt-3" style="width: 15rem; margin-left: 40%;">
+          <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title text-center">Profile info</h5>
+          <ul class="list-group">
+            <li class="list-group-item">{{user[0].firstname}}</li>
+            <li class="list-group-item">{{user[0].lastname}}</li>
+            <li class="list-group-item">{{user[0].email}}</li>
+            <li class="list-group-item">{{user[0].date_of_birth}}</li>
+          </ul>
+          <br>
+          <button type="button" class="btn" data-toggle="modal" data-target="#confirm"  style="margin-left: 26%; background-color: #D35E5E;">
+            Unregister
+          </button>
 
-        <div class="container mt-4">
-            <h2>Draft Messages</h2>
-            <br>
-                {% if draft_msgs  %}
-                    <table class="table table-striped" style="background-color: aliceblue;">
-                        <thead>
-                            <tr>
-                                <th>Text</th>
-                                <th>Receiver</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in draft_msgs %}
-                                <tr>
-                                    <td>{{ i[0].text }}</td>
-                                    <td>{{ i[1].email }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <p>No draft messages !</p>
-                {% endif %} 
+        </div>
+        </div>
+        <div class="modal fade" tabindex="-1" role="dialog" id="confirm" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Unregister</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Are you sure?</p>
+              </div>
+              <div class="modal-footer">
+                <a href="/delete_user" class="btn" style="background-color: #D35E5E;">Yes</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
         </div>
         
-        </body>
-</html>
-
-
+</body>

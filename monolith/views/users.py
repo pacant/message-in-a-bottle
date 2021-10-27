@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, render_template, request
 
 from monolith.database import User, db
 from monolith.forms import UserForm
+from flask_login import current_user
 
 users = Blueprint('users', __name__)
 
@@ -33,3 +34,14 @@ def create_user():
         return render_template('create_user.html', form=form)
     else:
         raise RuntimeError('This should not happen!')
+@users.route('/delete_user') 
+def delete_user():
+    User.query.filter_by(id=current_user.id).delete()
+    db.session.commit()
+    return redirect ('/')
+
+@users.route('/userinfo')
+def get_user_info():
+    user=db.session.query(User).filter(current_user.id == User.id).all()
+    print(user)
+    return render_template('user_info.html',user=user)
