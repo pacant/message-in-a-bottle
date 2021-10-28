@@ -14,6 +14,22 @@
             background-image: url(https://i.postimg.cc/YSgCg909/mare2.jpg);
             background-size: cover;
             }
+            #myInput {
+            width: 50%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px;
+            border: 1px solid #ddd; 
+            margin-bottom: 12px;
+          }
+
+          #myUL {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+          }
+          #myUL button:hover{
+            background-color: #eee; /* Add a hover effect to all links, except for headers */
+          }
     </style>
     </head>
     <body>
@@ -48,18 +64,39 @@
           </div>
         </div>
     </nav>
-      <div class="list-group" style="margin-left:34%; margin-top: 11%;">
-        <div class="container">
-          <form method="get" action="/message/send" class="inline">
-              <h4 class="mb-4" style="margin-left: 3%;">Choose a recipient for your message</h4>
-              {% for rec in recipients: %}
-              <input type="hidden" name="extra_submit_param" value="extra_submit_value">
-              <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
-                  {{rec.email}}
-              </button>
-              {% endfor %}
-          </form>
-        </div>
-      </div>
+    <div class="container data" style="margin-left: 32%; margin-top: 10%;">
+      <input type="text" id="myInput" onkeyup="search()" placeholder="Search recipient">
+      <form method="get" action="/message/send" class="inline">
+        <ul id="myUL">
+          {% for rec in recipients: %}
+          <li><input type="hidden" name="extra_submit_param" value="extra_submit_value">
+            <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
+                {{rec.email}}
+            </button></li>
+            {% endfor %}
+        </ul>
+      </form>
+    </div>
   </body>
+  <script>
+    function search() {
+      // Declare variables
+      var input, filter, ul, li, button, i, txtValue;
+      input = document.getElementById('myInput');
+      filter = input.value.toUpperCase();
+      ul = document.getElementById("myUL");
+      li = ul.getElementsByTagName('li');
+    
+      // Loop through all list items, and hide those who don't match the search query
+      for (i = 0; i < li.length; i++) {
+        button = li[i].getElementsByTagName("button")[0];
+        txtValue = button.textContent || button.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          li[i].style.display = "";
+        } else {
+          li[i].style.display = "none";
+        }
+      }
+    }
+    </script>
 </html>
