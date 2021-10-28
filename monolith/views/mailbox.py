@@ -33,9 +33,7 @@ def see_draft_messages():
     if request.method == 'GET':
         draft_msgs = db.session.query(Message, User).filter(Message.id_receiver == User.id).filter(
             Message.id_sender == current_user.id).filter(Message.draft)
-        print(draft_msgs)
         draft_msgs = draft_msgs.all()
-        print(draft_msgs)
         return render_template('msgs_draft.html', draft_msgs=draft_msgs)
     else:
         return render_template('msgs_draft.html')

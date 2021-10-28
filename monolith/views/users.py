@@ -45,5 +45,4 @@ def delete_user():
 @users.route('/userinfo')
 def get_user_info():
     user = db.session.query(User).filter(current_user.id == User.id).all()
-    print(user)
     return render_template('user_info.html', user=user)
