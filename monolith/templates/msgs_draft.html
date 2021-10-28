@@ -64,7 +64,7 @@
                         <tbody>
                             {% for i in draft_msgs %}
                                 <tr>
-                                    <td>{{ i[0].text }}</td>
+                                    <td><a href="/message/send/{{i[0].id}}">{{ i[0].text }}</a></td>
                                     <td>{{ i[1].email }}</td>
                                 </tr>
                             {% endfor %}

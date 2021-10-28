@@ -58,12 +58,11 @@ class TestApp(unittest.TestCase):
         self.login(app, "prova_002@example.it", "1234")
 
         reply = app.post("/message/send",
-                    data=dict(
-                        text="Ciao Giulio",
-                        receiver="prova_001@example.it",
-                        date = "2021-10-28T00:10"
-                    ))
-
+                         data=dict(
+                             text="Ciao Giulio",
+                             receiver="prova_001@example.it",
+                             date="2021-10-28T00:10"
+                         ))
         self.assertIn(b"Message sent correctly!", reply.data)
-
-        db.session.query(User).filter( User.email == "prova_002@example.it")
+        
+        db.session.query(User).filter(User.email == "prova_002@example.it")

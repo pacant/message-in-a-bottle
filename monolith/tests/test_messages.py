@@ -1,6 +1,6 @@
 
 from datetime import date
-import json
+import pytest
 import unittest
 import wtforms as f
 
@@ -50,3 +50,11 @@ class TestApp(unittest.TestCase):
 
         self.assertIn(b"Message sent correctly!", reply.data)
         User.query.filter_by(email="prova_001@example.it").delete()
+
+    def set_recipient_send_message_test():
+        tested_app.config['WTF_CSRF_ENABLED'] = False
+        app = tested_app.test_client()
+
+        db.init_app(tested_app)
+        tested_app.app_context().push()
+
