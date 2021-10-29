@@ -47,3 +47,24 @@ class TestApp(unittest.TestCase):
 
         reply = app.get("/delete_user")
         self.assertEqual(reply.status, '302 FOUND')
+    def test_send_message(self):
+        tested_app.config['WTF_CSRF_ENABLED'] = False
+        app = tested_app.test_client()
+
+        db.init_app(tested_app)
+        tested_app.app_context().push()
+
+        self.register(app, "prova_001@example.it", "Giulio", "Example", "1234", "01/01/2001")
+        self.register(app, "prova_002@example.it", "Antonio", "Example", "1234", "01/01/2001")
+
+        self.login(app, "prova_002@example.it", "1234")
+
+        reply = app.post("/message/send",
+                         data=dict(
+                             text="Ciao Giulio",
+                             receiver="prova_001@example.it",
+                             date="2021-10-28T00:10"
+                         ))
+        self.assertIn(b"Message sent correctly!", reply.data)
+        
+        db.session.query(User).filter(User.email == "prova_002@example.it")
