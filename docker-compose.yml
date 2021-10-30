@@ -1,0 +1,14 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: monolith
+      FLASK_ENV: development
+      PYTHONPATH: $PWD
+  redis:  
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
