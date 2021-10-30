@@ -55,15 +55,12 @@ def draft():
     return redirect('/mailbox/draft')
 
 
-@ messages.route("/message/recipients", methods=["GET", "POST"])
+@ messages.route("/message/recipients", methods=["GET"])
 def chooseRecipient():
     if request.method == "GET":
         email = current_user.email
         recipients = db.session.query(User).filter(User.email != email)
         return render_template("recipients.html", recipients=recipients)
-    if request.method == "POST":
-        recipient = request.form.get("recipient")
-        return render_template("send_message.html", recipient=recipient)
 
 
 @ messages.route('/message/<message_id>')
