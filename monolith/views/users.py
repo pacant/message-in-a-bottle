@@ -25,10 +25,13 @@ def create_user():
             where x is in [md5, sha1, bcrypt], the hashed_password should be = x(password + s) where
             s is a secret key.
             """
-            new_user.set_password(form.password.data)
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect('/')
+            result = db.session.query(User).filter(User.email == new_user.email).all()
+            if not result:
+                new_user.set_password(form.password.data)
+                db.session.add(new_user)
+                db.session.commit()
+                return redirect('/')
+            return render_template("create_user.html",emailError = True, form=form)
     elif request.method == 'GET':
         return render_template('create_user.html', form=form)
     else:
