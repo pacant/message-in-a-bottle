@@ -35,16 +35,7 @@ def send_message():
     if current_user is not None and hasattr(current_user, 'id'):
 
         if request.method == 'POST':
-            email = request.form['receiver']
-            recipient = db.session.query(User.id).filter(User.email == email).all()
-            result = db.session.query(Blacklist).filter(
-                Blacklist.id_user==recipient[0].id).filter(
-                    Blacklist.id_blacklisted==current_user.id
-                ).all()
-
-            if not result:
-                send_message_async(request.form)
-                
+            send_message_async(request.form)
             return render_template("send_message.html", form=dict(), message_ok=True)
         else:
             # landing from the recipients page, we want to populate the field with the chosen one
@@ -96,9 +87,17 @@ def viewMessage(message_id):
 
 
 def send_message_async(data):
+    email = request.form['receiver']
+    recipient = db.session.query(User.id).filter(User.email == email).all()
+    result = db.session.query(Blacklist).filter(
+                Blacklist.id_user==recipient[0].id).filter(
+                    Blacklist.id_blacklisted==current_user.id
+                ).all()
     date = parser.parse(data['date'] + '+0200')
     id_message = save_message(data)
-    send_message_task.apply_async((id_message,), eta=date)
+
+    if not result:
+        send_message_task.apply_async((id_message,), eta=date)
 
 
 def save_message(data):
