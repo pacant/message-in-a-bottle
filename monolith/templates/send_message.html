@@ -61,8 +61,12 @@
     <form action='/message/send' method='POST'>
       {% endif %}
       <div class="form-group ">
-          <label for="email">Recipient: </label>
-          <input value='{{form["recipient"]}}' name="receiver" placeholder="Enter email" id="receiver" />
+        <label for="email">Recipient: </label>
+          {% if reply %}
+            <input value='{{reply}}' name="receiver" id="receiver" />
+          {% else %}
+            <input value='{{form["recipient"]}}' name="receiver" placeholder="Enter email" id="receiver" />
+          {% endif %}
       </div>
 
       <div class="form-group ">

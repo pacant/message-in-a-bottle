@@ -86,6 +86,33 @@ def viewMessage(message_id):
                                date='-')
 
 
+@messages.route('/message/<message_id>/reply', methods=['GET', 'POST'])
+def reply_to_message(message_id):
+    if request.method == 'POST':
+        recipient = request.form['recipient']
+        return render_template('send_message.html', reply=recipient, form=recipient)
+    else:
+        message = db.session.query(Message, User).filter(
+            Message.id == int(message_id)
+        ).join(User, Message.id_sender == User.id).first()
+
+        if message is None or (int(message.Message.id_receiver) == current_user.id and not message.Message.delivered):
+            abort(404)
+        elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
+            abort(403)
+        else:
+            recipient = db.session.query(User).filter(
+                User.id == message.Message.id_receiver
+            ).first()
+            
+            return render_template("message.html",
+                               sender=message.User,
+                               recipient=recipient,
+                               message=message.Message,
+                               date='-')
+
+
+
 def send_message_async(data):
     date = parser.parse(data['date'] + '+0200')
     id_message = save_message(data)

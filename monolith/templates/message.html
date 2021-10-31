@@ -51,15 +51,19 @@
         </nav>
 
     <div class="container mt-4" style="position: relative; align-content: center;">
-      <div class="card" style="min-width: 18rem; max-width: 100%; position: relative;">
-        <div class="card-body">
-          <h5 class="card-title">
-            Bottled by: {{sender.firstname}} {{sender.lastname}} &lt;{{sender.email}}&gt;
-          </h5>
-          <p style="border-bottom: 1px solid black;">To: {{recipient.firstname}} {{recipient.lastname}} &lt;{{recipient.email}}&gt;</p>
-          <p class="card-text">{{message.text}}</p>
-          <a href="#" class="btn btn-primary" style="display: none;">Go somewhere</a>
+      <form method="post" action="/message/<message_id>/reply" class="inline">
+        <div class="card" style="min-width: 18rem; max-width: 100%; position: relative;">
+          <div class="card-body">
+            <h5 class="card-title">
+              Bottled by: {{sender.firstname}} {{sender.lastname}} &lt;
+              <input type="hidden" name="recipient" value={{sender.email}}>{{sender.email}}&gt;
+            </h5>
+            <p style="border-bottom: 1px solid black;">To: {{recipient.firstname}} {{recipient.lastname}} &lt;{{recipient.email}}&gt;</p>
+            <p class="card-text">{{message.text}}</p>
+            <a href="#" class="btn btn-primary" style="display: none;">Go somewhere</a>
+          </div>
         </div>
-      </div>
+        <button type="submit" role="button" class="btn mt-2" style="background-color: forestgreen;">Reply</button>
+      </form>
   </body>
 </html>
