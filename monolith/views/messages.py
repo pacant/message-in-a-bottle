@@ -1,6 +1,6 @@
 from flask import Blueprint, request, redirect, abort
 from sqlalchemy.orm import query
-from monolith.database import Message, db, User
+from monolith.database import Message, User, Blacklist, db
 from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
@@ -35,7 +35,16 @@ def send_message():
     if current_user is not None and hasattr(current_user, 'id'):
 
         if request.method == 'POST':
-            send_message_async(request.form)
+            email = request.form['receiver']
+            recipient = db.session.query(User.id).filter(User.email == email).all()
+            result = db.session.query(Blacklist).filter(
+                Blacklist.id_user==recipient[0].id).filter(
+                    Blacklist.id_blacklisted==current_user.id
+                ).all()
+
+            if not result:
+                send_message_async(request.form)
+                
             return render_template("send_message.html", form=dict(), message_ok=True)
         else:
             # landing from the recipients page, we want to populate the field with the chosen one
