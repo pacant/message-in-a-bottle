@@ -17,11 +17,13 @@ def send_message(data):
         app = create_app()
         db.init_app(app)
         message = Message()
-        
+
         with app.app_context():
             message.text = data['text']
-            message.sender= data['sender']
-            message.receiver= data['receiver']
+            id_receiver = db.session.query(User).filter(User.email == data['receiver']).first().id
+            message.id_receiver = id_receiver
+            message.id_sender = data['id_sender']
+
             db.session.add(message)
             db.session.commit()
             print(message)

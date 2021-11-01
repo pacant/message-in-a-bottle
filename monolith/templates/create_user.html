@@ -1,21 +1,68 @@
 <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+      body{
+            background-image: url(https://i.postimg.cc/YSgCg909/mare2.jpg);
+            background-size: cover;
+          }
+    </style>
+  </head>
  <body>
-  <form action="" method="POST">
-    {{ form.hidden_tag() }}
-    <dl>
-     {% for field in form.display %}
-     <dt>{{ form[field].label }}</dt>
-     <dd>{{ form[field]() }}</dd>
-       {% if form[field].errors %}
-          {% for e in form[field].errors %}
-           <p class="help-block">{{ e }}</p>
-          {% endfor %}
-       {% endif %}
-     {% endfor %}
-    </dl>
-    <p>
-    <input type=submit value="Submit">
-  </form>
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color:#FFFFFF;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="https://i.postimg.cc/hPKRcRYH/Senza-titolo-7.png" width="30" height="30" alt=""></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="/message/recipients">New Message</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled">Inbox</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled">Outbox</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled">Profile</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+ <!--  <div class="card mx-auto" style= "width: 50rem; height:100%; background-color: whitesmoke;"> -->
+    <div class="container" id="log" style="margin-top: 8%;">
+      <div class="row">
+        <div class="col text-center">
+          <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <dl>
+            {% for field in form.display %}
+            <dt><h5 >{{ form[field].label }}</h5></dt>
+            <dd>{{ form[field]() }}</dd>
+              {% if form[field].errors %}
+                  {% for e in form[field].errors %}
+                  <p class="help-block">{{ e }}</p>
+                  {% endfor %}
+              {% endif %}
+            {% endfor %}
+            </dl>
+            <p>
+              <button type="submit" class="btn btn-light" style="background-color: #E5BE6B;">Register</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  <!-- </div> -->
+  
  </body>
 </html>
-

@@ -44,8 +44,16 @@ class Message(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     text = db.Column(db.Unicode(128))
-    sender = db.Column(db.Unicode(128))
-    receiver = db.Column(db.Unicode(128))
+    id_sender = db.Column(db.Unicode(128))
+    id_receiver = db.Column(db.Unicode(128))
     draft = db.Column(db.Boolean, default = False)
+    is_read = db.Column(db.Boolean, default=False)
     def __init__(self, *args, **kw):
         super(Message, self).__init__(*args, **kw)
+
+     '''
+     logic for when a receiver reads a message
+     '''
+    def read(self):
+        self.is_read = True
+        pass    
