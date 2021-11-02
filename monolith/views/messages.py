@@ -55,12 +55,31 @@ def draft():
     return redirect('/mailbox/draft')
 
 
+@ messages.route('/message/send/forward/<id_message>', methods = ['POST'])
+def send_forward_msg(id_message):
+    if request.method == "POST":
+        recipient_message = request.form['recipient']
+        text = db.session.query(Message).filter(Message.id == id_message).first().text
+        form = dict(recipient = recipient_message, text = text, message_id = id_message)
+        return render_template("send_message.html", form=form, forward=True)
+
+
 @ messages.route("/message/recipients", methods=["GET"])
 def chooseRecipient():
     if request.method == "GET":
         email = current_user.email
         recipients = db.session.query(User).filter(User.email != email)
-        return render_template("recipients.html", recipients=recipients)
+        form = dict(recipients=recipients)
+        return render_template("recipients.html", form=form)
+
+
+@ messages.route('/message/recipients/<id_message>', methods = ['GET'])
+def choose_recipient_msg(id_message):
+    if request.method == "GET":
+        email = current_user.email
+        recipients = db.session.query(User).filter(User.email != email)
+        form = dict(recipients=recipients, id_message=id_message)
+        return render_template("recipients.html", form = form)
 
 
 @ messages.route('/message/<message_id>')
@@ -110,7 +129,6 @@ def reply_to_message(message_id):
                                recipient=recipient,
                                message=message.Message,
                                date='-')
-
 
 
 def send_message_async(data):

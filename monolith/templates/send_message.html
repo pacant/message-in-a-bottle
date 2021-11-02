@@ -55,7 +55,7 @@
     </div>
   {%endif%}
 
-    {% if "message_id" in form %}
+    {% if (("message_id" in form) and (not forward == True)) %}
     <form action='/message/send/{{form["message_id"]}}' method='POST'>
       {% else %}
     <form action='/message/send' method='POST'>
@@ -83,7 +83,7 @@
 
         <button type="Submit" value = "submit" class="btn" style="background-color: 92C991">Send</button>
 
-      <a href="/message/recipients" class="btn" style="background-color: #E5BE6B;margin-bottom: 1.5px;float: right; ">Choose recipient</a>
+      <a href="/message/recipients/{{form['message_id']}}" class="btn" style="background-color: #E5BE6B;margin-bottom: 1.5px;float: right; ">Choose recipient</a>
 
         <button
           type="Submit"

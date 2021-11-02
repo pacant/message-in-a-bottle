@@ -65,5 +65,8 @@
         </div>
         <button type="submit" role="button" class="btn mt-2" style="background-color: forestgreen;">Reply</button>
       </form>
+      <form method = "get" action="/message/recipients/{{message.id}}">
+        <button type="submit" class="btn btn-primary mt-2" name="forward" role="button">Forward</button>
+      </form>
   </body>
 </html>

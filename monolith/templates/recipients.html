@@ -66,14 +66,18 @@
     </nav>
     <div class="container data" style="margin-left: 32%; margin-top: 10%;">
       <input type="text" id="myInput" onkeyup="search()" placeholder="Search recipient">
+      {% if "id_message" in form %}
+      <form action='/message/send/forward/{{form["id_message"]}}' method='POST'>
+      {% else %}
       <form method="get" action="/message/send" class="inline">
+        {% endif %}
         <ul id="myUL">
-          {% for rec in recipients: %}
+          {% for rec in form['recipients'] : %}
           <li><input type="hidden" name="extra_submit_param" value="extra_submit_value">
             <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
                 {{rec.email}}
             </button></li>
-            {% endfor %}
+          {% endfor %}            
         </ul>
       </form>
     </div>
