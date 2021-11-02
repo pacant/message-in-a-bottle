@@ -52,15 +52,13 @@ def draft():
 def chooseRecipient():
     if request.method == "GET":
         email = current_user.email
-        recipients = db.session.query(User).filter(User.email != email and not User.is_admin)
+        recipients = db.session.query(User).filter(User.email != email).filter(User.is_admin.is_(False))
         return render_template("recipients.html", recipients=recipients)
 
 
 @login_required
 @messages.route('/message/<message_id>')
 def viewMessage(message_id):
-    if current_user is None or not hasattr(current_user, 'id'):
-        return redirect('/')
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
     ).join(User, Message.id_sender == User.id).first()
