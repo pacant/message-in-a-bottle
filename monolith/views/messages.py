@@ -61,7 +61,7 @@ def send_forward_msg(id_message):
 def chooseRecipient():
     if request.method == "GET":
         email = current_user.email
-        recipients = db.session.query(User).filter(User.email != email).filter(User.admin.is_(False))
+        recipients = db.session.query(User).filter(User.email != email).filter(User.is_admin.is_(False))
         form = dict(recipients=recipients)
         return render_template("recipients.html", form=form)
 

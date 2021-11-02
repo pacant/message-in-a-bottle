@@ -51,7 +51,7 @@
         </nav>
 
     <div class="container mt-4" style="position: relative; align-content: center;">
-      <form method="post" action="/message/<message_id>/reply" class="inline">
+      <form style="display: inline" method="post" action="/message/<message_id>/reply" class="inline">
         <div class="card" style="min-width: 18rem; max-width: 100%; position: relative;">
           <div class="card-body">
             <h5 class="card-title">
@@ -63,10 +63,12 @@
             <a href="#" class="btn btn-primary" style="display: none;">Go somewhere</a>
           </div>
         </div>
-        <button type="submit" role="button" class="btn mt-2" style="background-color: forestgreen;">Reply</button>
+        {% if current_user.id == recipient.id%}
+        <button type="submit" role="button" class="btn mt-2" style="background-color: 175D7E;color: aliceblue;">Reply</button>
+        {% endif %}
       </form>
-      <form method = "get" action="/message/recipients/{{message.id}}">
-        <button type="submit" class="btn btn-primary mt-2" name="forward" role="button">Forward</button>
+      <form style="display: inline" method = "get" action="/message/recipients/{{message.id}}">
+        <button type="submit" class="btn mt-2" name="forward" role="button" style="background-color: #E5BE6B;margin-bottom: 1px;">Forward</button>
       </form>
   </body>
 </html>
