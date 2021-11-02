@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, abort
-from sqlalchemy.orm import query
+from flask_login.utils import login_required
 from monolith.database import Message, db, User
 from dateutil import parser
 from flask.templating import render_template
@@ -10,44 +10,37 @@ messages = Blueprint('messages', __name__)
 
 
 @messages.route('/message/send/<id_message>', methods=['GET', 'POST'])
+@login_required
 def send_draft(id_message):
-    if current_user is not None and hasattr(current_user, 'id'):
-
-        if request.method == 'POST':
-            send_message_async(request.form)
-            db.session.query(Message).filter(Message.id == id_message).delete()
-            db.session.commit()
-            return render_template("send_message.html", message_ok=True)
-        else:
-            message = db.session.query(Message).filter(Message.id == id_message).first()
-            receiver = db.session.query(User).filter(User.id == message.id_receiver).first().email
-            date = message.date_delivery.isoformat()
-            text = message.text
-            form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
-            return render_template("send_message.html", form=form)
-
+    if request.method == 'POST':
+        send_message_async(request.form)
+        db.session.query(Message).filter(Message.id == id_message).delete()
+        db.session.commit()
+        return render_template("send_message.html", form=dict(), message_ok=True)
     else:
-        return redirect('/message/send')
+        message = db.session.query(Message).filter(Message.id == id_message).first()
+        receiver = db.session.query(User).filter(User.id == message.id_receiver).first().email
+        date = message.date_delivery.isoformat()
+        text = message.text
+        form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
+        return render_template("send_message.html", form=form)
 
 
+@login_required
 @ messages.route('/message/send', methods=['GET', 'POST'])
 def send_message():
-    if current_user is not None and hasattr(current_user, 'id'):
-
-        if request.method == 'POST':
-            send_message_async(request.form)
-            return render_template("send_message.html", form=dict(), message_ok=True)
-        else:
-            # landing from the recipients page, we want to populate the field with the chosen one
-            recipient_message = request.args.get('recipient')
-            recipient = recipient_message if recipient_message is not None else ''
-            form = dict(recipient=recipient)
-            return render_template("send_message.html", form = form)
-
+    if request.method == 'POST':
+        send_message_async(request.form)
+        return render_template("send_message.html", form=dict(), message_ok=True)
     else:
-        return redirect('/')
+        # landing from the recipients page, we want to populate the field with the chosen one
+        recipient_message = request.args.get('recipient')
+        recipient = recipient_message if recipient_message is not None else ''
+        form = dict(recipient=recipient)
+        return render_template("send_message.html", form=form)
 
 
+@login_required
 @ messages.route('/draft', methods=['POST'])
 def draft():
     data = request.form
@@ -59,11 +52,12 @@ def draft():
 def chooseRecipient():
     if request.method == "GET":
         email = current_user.email
-        recipients = db.session.query(User).filter(User.email != email)
+        recipients = db.session.query(User).filter(User.email != email and not User.is_admin)
         return render_template("recipients.html", recipients=recipients)
 
 
-@ messages.route('/message/<message_id>')
+@login_required
+@messages.route('/message/<message_id>')
 def viewMessage(message_id):
     if current_user is None or not hasattr(current_user, 'id'):
         return redirect('/')
