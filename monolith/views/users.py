@@ -61,7 +61,10 @@ def add_user_to_blacklist():
             db.session.commit()
             return redirect('/blacklist')
         else:
-            users = db.session.query(User).filter(User.email != current_user.email)
+            blacklist = db.session.query(User.id).join(Blacklist,Blacklist.id_blacklisted == User.id).filter(
+                    Blacklist.id_user==current_user.id
+                )
+            users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(blacklist))
             return render_template('add_to_blacklist.html', users=users)
     else:
         return redirect('/')
@@ -70,8 +73,9 @@ def add_user_to_blacklist():
 @users.route('/blacklist', methods=['GET'])
 def get_blacklist():
     blacklist = db.session.query(Blacklist, User).filter(
-        Blacklist.id_blacklisted == User.id).filter(
-            Blacklist.id_user == current_user.id).all()
+                Blacklist.id_blacklisted == User.id).filter(
+                    Blacklist.id_user==current_user.id
+                ).all()
     return render_template('blacklist.html', blacklist=blacklist)
 
 
@@ -87,7 +91,8 @@ def remove_user_from_blacklist():
         else:
             blacklist = db.session.query(Blacklist, User).filter(
                 Blacklist.id_blacklisted == User.id).filter(
-                    Blacklist.id_user == current_user.id).all()
+                    Blacklist.id_user==current_user.id
+                ).all()
             return render_template('blacklist.html', blacklist=blacklist)
     else:
         return redirect('/')
