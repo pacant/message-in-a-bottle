@@ -1,6 +1,7 @@
 from flask import Blueprint, request, redirect, abort
 from flask_login.utils import login_required
-from monolith.database import Message, db, User
+from sqlalchemy.orm import query
+from monolith.database import Message, User, Blacklist, db
 from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
@@ -124,9 +125,17 @@ def reply_to_message(message_id):
 
 
 def send_message_async(data):
+    email = request.form['receiver']
+    recipient = db.session.query(User.id).filter(User.email == email).all()
+    result = db.session.query(Blacklist).filter(
+                Blacklist.id_user==recipient[0].id).filter(
+                    Blacklist.id_blacklisted==current_user.id
+                ).all()
     date = parser.parse(data['date'] + '+0200')
     id_message = save_message(data)
-    send_message_task.apply_async((id_message,), eta=date)
+
+    if not result:
+        send_message_task.apply_async((id_message,), eta=date)
 
 
 def save_message(data):
