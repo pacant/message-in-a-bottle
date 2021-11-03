@@ -57,6 +57,7 @@ def send_forward_msg(id_message):
         return render_template("send_message.html", form=form, forward=True)
 
 
+@login_required
 @ messages.route("/message/recipients", methods=["GET"])
 def chooseRecipient():
     if request.method == "GET":
@@ -66,6 +67,7 @@ def chooseRecipient():
         return render_template("recipients.html", form=form)
 
 
+@login_required
 @ messages.route('/message/recipients/<id_message>', methods=['GET'])
 def choose_recipient_msg(id_message):
     if request.method == "GET":

@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, render_template, request
-
+from flask_login.utils import login_required
 from monolith.database import User, Blacklist, db
 from monolith.forms import UserForm
 from flask_login import current_user
@@ -36,6 +36,7 @@ def create_user():
         return render_template('create_user.html', form=form)
 
 
+@login_required
 @users.route('/delete_user')
 def delete_user():
     User.query.filter_by(id=current_user.id).delete()
@@ -43,12 +44,14 @@ def delete_user():
     return redirect('/')
 
 
+@login_required
 @users.route('/userinfo')
 def get_user_info():
     user = db.session.query(User).filter(current_user.id == User.id).all()
     return render_template('user_info.html', user=user)
 
 
+@login_required
 @users.route('/blacklist/add', methods=['GET', 'POST'])
 def add_user_to_blacklist():
     if current_user is not None and hasattr(current_user, 'id'):
@@ -69,6 +72,7 @@ def add_user_to_blacklist():
         return redirect('/')
 
 
+@login_required
 @users.route('/blacklist', methods=['GET'])
 def get_blacklist():
     blacklist = db.session.query(Blacklist, User).filter(
@@ -77,6 +81,7 @@ def get_blacklist():
     return render_template('blacklist.html', blacklist=blacklist)
 
 
+@login_required
 @users.route('/blacklist/remove', methods=['GET', 'POST'])
 def remove_user_from_blacklist():
     if current_user is not None and hasattr(current_user, 'id'):
