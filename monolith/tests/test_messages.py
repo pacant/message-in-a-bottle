@@ -4,11 +4,14 @@ import unittest
 import wtforms as f
 
 from monolith.database import db, User, Message
-from . import app, recipient, sender
+from . import app, logout, recipient, sender, login
+
 class TestApp(unittest.TestCase):
 
 
     def test_message_draft(self):
+
+        login(app, sender, "1234")
 
         reply = app.get("/draft")
         self.assertEqual(reply.status, '405 METHOD NOT ALLOWED')
@@ -16,11 +19,13 @@ class TestApp(unittest.TestCase):
         message = dict(
             receiver = recipient,
             date='2020-10-26T01:01',
-            text='Test message')
+            text='Draft message')
 
         reply = app.post("/draft",
                             data=message)
         self.assertEqual(reply.status, '302 FOUND')
+
+        logout(app)
 
 
     def test_message_send(self):
@@ -28,7 +33,7 @@ class TestApp(unittest.TestCase):
         #reply = app.get("/message/send")
         #self.assertIn(b"Redirecting...",reply.data)
 
-
+        login(app, sender, "1234")
 
         reply = app.get("/message/send")
         self.assertEqual(reply.status, '200 OK')
@@ -45,9 +50,12 @@ class TestApp(unittest.TestCase):
 
         # User.query.filter_by(email="prova_001@example.it").delete()
 
+        logout(app)
+
 
     def test_message_send_recipient_not_exists(self):
 
+        login(app, sender, "1234")
 
         message = dict(
             receiver = recipient,
@@ -58,10 +66,15 @@ class TestApp(unittest.TestCase):
                             data=message,
                             follow_redirects=True)
         #self.assertEqual(reply.status, '400 Bad Request')
+        logout(app)
+
 
 
 
     def test_message_send_recipient_is_sender(self):
+
+        login(app, sender, "1234")
+
         message = dict(
             receiver = recipient,
             date='2020-10-26T01:01',
@@ -72,7 +85,14 @@ class TestApp(unittest.TestCase):
                             follow_redirects=True)
         self.assertEqual(reply.status, '200 OK')
 
+        logout(app)
+
+
+
     def test_message_view(self):
+
+        login(app, sender, "1234")
+
         id = 1
 
         reply = app.get("/message/"+str(id))
@@ -84,7 +104,15 @@ class TestApp(unittest.TestCase):
         reply = app.get("/delete_user")
         self.assertEqual(reply.status, '302 FOUND')
 
+        logout(app)
+
+
     def test_recipients(self):
 
+        login(app, sender, "1234")
+
         app.get('/message/recipients')
+
+        logout(app)
+
 

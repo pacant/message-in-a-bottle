@@ -23,9 +23,13 @@ def login(client, email, password):
                        ),
                        follow_redirects=True)
 
+
+def logout(client):
+    return client.get("/logout", follow_redirects=True)
+
 tested_app.config['WTF_CSRF_ENABLED'] = False
 app = tested_app.test_client()
 
 register(app, sender, "Prova", "Example", "1234", "01/01/2001")
 register(app, recipient, "Prova", "Example", "1234", "01/01/2001")
-login(app, sender, "1234")
+##login(app, sender, "1234")
