@@ -73,7 +73,7 @@
         {% endif %}
         <ul id="myUL">
           {% for rec in form['recipients'] : %}
-          <li><input type="hidden" name="extra_submit_param" value="extra_submit_value">
+          <li>
             <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
                 {{rec.email}}
             </button></li>
