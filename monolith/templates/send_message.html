@@ -56,9 +56,9 @@
   {%endif%}
 
     {% if (("message_id" in form) and (not forward == True)) %}
-    <form action='/message/send/{{form["message_id"]}}' method='POST'>
+    <form action='/message/send/{{form["message_id"]}}' method='POST' enctype=multipart/form-data>
       {% else %}
-    <form action='/message/send' method='POST'>
+    <form action='/message/send' method='POST' enctype=multipart/form-data>
       {% endif %}
       <div class="form-group ">
         <label for="email">Recipient: </label>
@@ -82,7 +82,7 @@
 
 
         <button type="Submit" value = "submit" class="btn" style="background-color: 92C991">Send</button>
-
+        <input type="file" id="files" name="files" multiple><br><br>
       <a href="/message/recipients/{{form['message_id']}}" class="btn" style="background-color: #E5BE6B;margin-bottom: 1.5px;float: right; ">Choose recipient</a>
 
         <button

@@ -65,3 +65,10 @@ class Blacklist(db.Model):
 
     def __init__(self, *args, **kw):
         super(Blacklist, self).__init__(*args, **kw)
+
+class Attachments(db.Model):
+
+    __tablename__ = 'attachments'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_message = db.Column(db.Unicode(128), ForeignKey('message.id'))
+    data = db.Column(db.LargeBinary)

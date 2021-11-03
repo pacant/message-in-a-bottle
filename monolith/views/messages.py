@@ -1,11 +1,11 @@
 from flask import Blueprint, request, redirect, abort
 from flask_login.utils import login_required
-from monolith.database import Message, User, Blacklist, db
+from monolith.database import Attachments, Message, User, Blacklist, db
 from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.background import send_message as send_message_task
-
+import base64
 messages = Blueprint('messages', __name__)
 
 
@@ -92,10 +92,17 @@ def viewMessage(message_id):
         recipient = db.session.query(User).filter(
             User.id == message.Message.id_receiver
         ).first()
+
+        images_db = db.session.query(Attachments).filter(Attachments.id == message_id).all()
+        images = []
+        for image in images_db:
+            images.append(base64.b64encode(image.data).decode('ascii'))
+            
         return render_template("message.html",
                                sender=message.User,
                                recipient=recipient,
                                message=message.Message,
+                               images=images,
                                date='-')
 
 
@@ -122,7 +129,16 @@ def save_message(data):
     message.id_sender = current_user.id
     message.draft = True if 'draft' in data else False
     message.date_delivery = parser.parse(data['date'] + '+0200')
+
     db.session.add(message)
+    db.session.commit()
+
+    for file in request.files:
+        attachment = Attachments()
+        attachment.id_message = message.id
+        attachment.data = request.files[file].read()
+        db.session.add(attachment)
+
     db.session.commit()
 
     return message.id

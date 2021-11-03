@@ -70,5 +70,10 @@
       <form style="display: inline" method = "get" action="/message/recipients/{{message.id}}">
         <button type="submit" class="btn mt-2" name="forward" role="button" style="background-color: #E5BE6B;margin-bottom: 1px;">Forward</button>
       </form>
+      {% if images %}
+      {% for image in images %}
+      <img class="img-responsive" src="data:image/jpeg;base64,{{image}}"/>
+      {%endfor%}
+      {%endif%}
   </body>
 </html>
