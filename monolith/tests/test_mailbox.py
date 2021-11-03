@@ -101,3 +101,5 @@ class TestApp(unittest.TestCase):
 
         #reply = app.get('/mailbox/draft')
         #self.assertIn(b'DraftMessage', reply.data)
+
+        logout(app)
