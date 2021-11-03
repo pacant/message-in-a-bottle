@@ -353,3 +353,5 @@ flake8-report/
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,flask,visualstudiocode,jupyternotebooks,linux,pycharm+all,virtualenv
 
 nohup.out
+lottery_beat.txt
+lottery_worker.txt

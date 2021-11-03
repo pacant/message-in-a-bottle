@@ -18,6 +18,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
     is_anonymous = False
+    trials = db.Column(db.Integer, default = 0)
+    points = db.Column(db.Integer, default = 0)
 
     def __init__(self, *args, **kw):
         super(User, self).__init__(*args, **kw)

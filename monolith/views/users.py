@@ -4,6 +4,8 @@ from monolith.database import User, db
 from monolith.forms import UserForm
 from flask_login import current_user
 
+import random
+
 users = Blueprint('users', __name__)
 
 
@@ -47,3 +49,22 @@ def delete_user():
 def get_user_info():
     user = db.session.query(User).filter(current_user.id == User.id).all()
     return render_template('user_info.html', user=user)
+
+
+@users.route('/lottery')
+def lottery_info():
+    user = db.session.query(User).filter(current_user.id == User.id).first()
+    return render_template("lottery.html", trials=user.trials, points = user.points)
+
+
+@users.route('/spin', methods=['GET', 'POST'])
+def spin_roulette():
+    user = db.session.query(User).filter(current_user.id == User.id).first()
+    if user.trials > 0:
+        prizes = [10, 20, 40, 80]
+        prize = random.choice(prizes)
+        db.session.query(User).filter(current_user.id == User.id).update(
+            {"points": User.points + prize, "trials": User.trials - 1})
+        db.session.commit()
+        return render_template("lottery.html", trials=user.trials, prize=prize, points=user.points)
+    return redirect("/lottery")
