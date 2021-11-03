@@ -34,8 +34,6 @@ def create_user():
             return render_template("create_user.html", emailError=True, form=form)
     elif request.method == 'GET':
         return render_template('create_user.html', form=form)
-    else:
-        raise RuntimeError('This should not happen!')
 
 
 @users.route('/delete_user')

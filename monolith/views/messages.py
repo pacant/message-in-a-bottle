@@ -78,8 +78,6 @@ def choose_recipient_msg(id_message):
 @login_required
 @messages.route('/message/<message_id>')
 def viewMessage(message_id):
-    if current_user is None or not hasattr(current_user, 'id'):
-        return redirect('/')
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
     ).join(User, Message.id_sender == User.id).first()

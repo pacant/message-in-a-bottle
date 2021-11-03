@@ -10,8 +10,7 @@ mailbox = Blueprint('mailbox', __name__)
 @mailbox.route('/mailbox/sent', methods=['GET'])
 @login_required
 def see_sent_messages():
-    msgs_sent = db.session.query(Message, User).filter(
-        Message.id_receiver == User.id).filter(
+    msgs_sent = db.session.query(Message, User).filter(Message.id_receiver == User.id).filter(
         Message.id_sender == current_user.id).filter(Message.draft.is_(False)).all()
     return render_template('msgs_sent.html', msgs_sent=msgs_sent)
 
