@@ -1,6 +1,5 @@
 from flask import Blueprint, request, redirect, abort
 from flask_login.utils import login_required
-from sqlalchemy.orm import query
 from monolith.database import Message, User, Blacklist, db
 from dateutil import parser
 from flask.templating import render_template
@@ -124,9 +123,8 @@ def send_message_async(data):
     email = request.form['receiver']
     recipient = db.session.query(User.id).filter(User.email == email).all()
     result = db.session.query(Blacklist).filter(
-                Blacklist.id_user==recipient[0].id).filter(
-                    Blacklist.id_blacklisted==current_user.id
-                ).all()
+        Blacklist.id_user == recipient[0].id).filter(
+            Blacklist.id_blacklisted == current_user.id).all()
     date = parser.parse(data['date'] + '+0200')
     id_message = save_message(data)
 
