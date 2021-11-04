@@ -1,8 +1,10 @@
 from flask import Blueprint, redirect, render_template, request
-from flask_login.utils import login_required
-from monolith.database import User, Blacklist, db
+from flask_login.utils import login_fresh, login_required
+from monolith.database import User, Blacklist, Reports, db
 from monolith.forms import UserForm
 from flask_login import current_user
+
+NUM_REPORTS = 3
 
 users = Blueprint('users', __name__)
 
@@ -92,3 +94,40 @@ def remove_user_from_blacklist():
             Blacklist.id_blacklisted == User.id).filter(
                 Blacklist.id_user == current_user.id).all()
         return render_template('blacklist.html', blacklist=blacklist)
+
+
+@login_required
+@users.route('/report', methods=['GET'])
+def get_report():
+    report = db.session.query(Reports, User).filter(
+        Reports.id_reported == User.id).filter(
+            Reports.id_user == current_user.id).all()
+    return render_template('report.html', report=report)
+
+
+@login_required
+@users.route('/report/add', methods=['GET', 'POST'])
+def report_user():
+    if request.method == 'POST':
+        report = Reports()
+        report.id_user = current_user.id
+        email = request.form.get('email')
+        report.id_reported = db.session.query(User.id).filter(User.email == email)
+        db.session.add(report)
+        db.session.commit()
+
+        num_reports = db.session.query(Reports).filter(Reports.id_reported == report.id_reported).all()
+        if len(num_reports) == NUM_REPORTS:
+            blacklist = Blacklist()
+            blacklist.id_user = current_user.id
+            blacklist.id_blacklisted = report.id_reported
+            db.session.add(blacklist)
+            db.session.commit()
+            return redirect('/blacklist')
+        else:
+            return redirect('/report')
+    else:
+        report = db.session.query(User.id).join(Reports, Reports.id_reported == User.id).filter(
+            Reports.id_user == current_user.id)
+        users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(report))
+        return render_template('report_user.html', users=users)

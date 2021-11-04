@@ -73,3 +73,15 @@ class Attachments(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_message = db.Column(db.Unicode(128), ForeignKey('message.id'))
     data = db.Column(db.LargeBinary)
+
+
+class Reports(db.Model):
+
+    __tablename__ = 'reports'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_user = db.Column(db.Unicode(128), ForeignKey('user.id'))
+    id_reported = db.Column(db.Unicode(128), ForeignKey('user.id'))
+
+    def __init__(self, *args, **kw):
+        super(Reports, self).__init__(*args, **kw)
