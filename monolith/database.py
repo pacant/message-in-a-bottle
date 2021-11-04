@@ -66,6 +66,7 @@ class Blacklist(db.Model):
     def __init__(self, *args, **kw):
         super(Blacklist, self).__init__(*args, **kw)
 
+
 class Attachments(db.Model):
 
     __tablename__ = 'attachments'

@@ -97,7 +97,7 @@ def viewMessage(message_id):
         images = []
         for image in images_db:
             images.append(base64.b64encode(image.data).decode('ascii'))
-            
+
         return render_template("message.html",
                                sender=message.User,
                                recipient=recipient,

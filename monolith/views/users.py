@@ -54,22 +54,19 @@ def get_user_info():
 @login_required
 @users.route('/blacklist/add', methods=['GET', 'POST'])
 def add_user_to_blacklist():
-    if current_user is not None and hasattr(current_user, 'id'):
-        if request.method == 'POST':
-            blacklist = Blacklist()
-            blacklist.id_user = current_user.id
-            email = request.form.get('email')
-            blacklist.id_blacklisted = db.session.query(User.id).filter(User.email == email)
-            db.session.add(blacklist)
-            db.session.commit()
-            return redirect('/blacklist')
-        else:
-            blacklist = db.session.query(User.id).join(Blacklist, Blacklist.id_blacklisted == User.id).filter(
-                Blacklist.id_user == current_user.id)
-            users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(blacklist))
-            return render_template('add_to_blacklist.html', users=users)
+    if request.method == 'POST':
+        blacklist = Blacklist()
+        blacklist.id_user = current_user.id
+        email = request.form.get('email')
+        blacklist.id_blacklisted = db.session.query(User.id).filter(User.email == email)
+        db.session.add(blacklist)
+        db.session.commit()
+        return redirect('/blacklist')
     else:
-        return redirect('/')
+        blacklist = db.session.query(User.id).join(Blacklist, Blacklist.id_blacklisted == User.id).filter(
+            Blacklist.id_user == current_user.id)
+        users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(blacklist))
+        return render_template('add_to_blacklist.html', users=users)
 
 
 @login_required
@@ -84,17 +81,14 @@ def get_blacklist():
 @login_required
 @users.route('/blacklist/remove', methods=['GET', 'POST'])
 def remove_user_from_blacklist():
-    if current_user is not None and hasattr(current_user, 'id'):
-        if request.method == 'POST':
-            email = request.form["radioEmail"]
-            id_blklst = db.session.query(User.id).filter(User.email == email).all()
-            db.session.query(Blacklist).filter(Blacklist.id_blacklisted == id_blklst[0].id).delete()
-            db.session.commit()
-            return redirect('/blacklist')
-        else:
-            blacklist = db.session.query(Blacklist, User).filter(
-                Blacklist.id_blacklisted == User.id).filter(
-                    Blacklist.id_user == current_user.id).all()
-            return render_template('blacklist.html', blacklist=blacklist)
+    if request.method == 'POST':
+        email = request.form["radioEmail"]
+        id_blklst = db.session.query(User.id).filter(User.email == email).all()
+        db.session.query(Blacklist).filter(Blacklist.id_blacklisted == id_blklst[0].id).delete()
+        db.session.commit()
+        return redirect('/blacklist')
     else:
-        return redirect('/')
+        blacklist = db.session.query(Blacklist, User).filter(
+            Blacklist.id_blacklisted == User.id).filter(
+                Blacklist.id_user == current_user.id).all()
+        return render_template('blacklist.html', blacklist=blacklist)
