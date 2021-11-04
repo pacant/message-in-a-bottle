@@ -82,7 +82,7 @@ def get_blacklist():
 @users.route('/blacklist/remove', methods=['GET', 'POST'])
 def remove_user_from_blacklist():
     if request.method == 'POST':
-        email = request.form["radioEmail"]
+        email = request.form["email"]
         id_blklst = db.session.query(User.id).filter(User.email == email).all()
         db.session.query(Blacklist).filter(Blacklist.id_blacklisted == id_blklst[0].id).delete()
         db.session.commit()
