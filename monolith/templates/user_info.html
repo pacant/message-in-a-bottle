@@ -30,6 +30,54 @@
             <li class="list-group-item">{{user[0].date_of_birth}}</li>
           </ul>
           <br>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="content_filter" style="display: none;">
+            <label class="form-check-label" for="content_filter">Bad words filter</label>
+          </div>
+          <script>
+              function httpGetAsync(theUrl, callback){
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() { 
+                  if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+                }
+                xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+                xmlHttp.send(null);
+              }
+              
+
+              function httpPutAsync(theUrl, params, callback){
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function() { 
+                  if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    callback(xmlHttp.responseText);
+                }
+                xmlHttp.open("PUT", theUrl, true); // true for asynchronous 
+                //Send the proper header information along with the request
+                xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                let urlencoded_params = "";
+                for (let key in params) {
+                  urlencoded_params+=key+"="+encodeURIComponent(params[key])+"&";
+                }
+                xmlHttp.send(urlencoded_params);
+              }
+
+              checkbox = document.getElementById('content_filter')
+              httpGetAsync('/userinfo/content_filter/1', (ret)=>{
+                if(JSON.parse(ret).active){
+                  checkbox.checked=true;
+                }else{
+                  checkbox.checked=false;
+                }
+
+                checkbox.oninput = ()=>{
+                    httpPutAsync('/userinfo/content_filter/1', {'active':checkbox.checked})
+                }
+                checkbox.style.display = ''
+              })
+          </script>
+
+          <br>
           <button type="button" class="btn" data-toggle="modal" data-target="#confirm"  style="margin-left: 10%; background-color: #D35E5E;">
             Unregister
           </button>

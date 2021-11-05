@@ -1,11 +1,12 @@
 from flask import Blueprint, request, redirect, abort
 from flask_login.utils import login_required
-from monolith.database import Attachments, Message, User, Blacklist, db
+from monolith.database import ContentFilter, UserContentFilter, Attachments, Message, User, Blacklist, db
 from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.background import send_message as send_message_task
-import base64
+import base64, re, json
+
 messages = Blueprint('messages', __name__)
 
 
@@ -93,6 +94,12 @@ def viewMessage(message_id):
             User.id == message.Message.id_receiver
         ).first()
 
+        #if message contains bad words it's not showed
+        if int(message.Message.id_sender) != current_user.id:
+            purified_message = purify_message(message.Message.text)
+            if purified_message != message.Message.text:
+                message.Message.text = purified_message
+
         images_db = db.session.query(Attachments).filter(Attachments.id == message_id).all()
         images = []
         for image in images_db:
@@ -142,3 +149,28 @@ def save_message(data):
     db.session.commit()
 
     return message.id
+
+def purify_message(msg):
+    if current_user is None or not hasattr(current_user, 'id'):
+        return msg
+
+    list = db.session.query(UserContentFilter.id_content_filter).filter(
+        UserContentFilter.id_user == current_user.id
+    )
+
+    personal_filters = db.session.query(ContentFilter, UserContentFilter).filter(
+        ContentFilter.id.in_(list)
+    ).join(UserContentFilter, isouter=True).union_all(
+        db.session.query(ContentFilter, UserContentFilter).filter(
+            ContentFilter.private.is_(False), UserContentFilter.active.is_(True)
+        ).join(UserContentFilter, isouter=True)
+    ).all()
+
+    purified_message = msg
+
+    for personal_filter in personal_filters:
+        print(personal_filter.ContentFilter.words)
+        for word in json.loads(personal_filter.ContentFilter.words):
+            insensitive_word = re.compile(re.escape(word), re.IGNORECASE)
+            purified_message = insensitive_word.sub('*'*len(word), purified_message)
+    return purified_message

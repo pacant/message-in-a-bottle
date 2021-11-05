@@ -3,7 +3,7 @@ import datetime
 from flask import Flask
 
 from monolith.auth import login_manager
-from monolith.database import User, db
+from monolith.database import ContentFilter, User, db
 from monolith.views import blueprints
 
 
@@ -35,6 +35,15 @@ def create_app():
             example.is_admin = True
             example.set_password('admin')
             db.session.add(example)
+            db.session.commit()
+        q = db.session.query(ContentFilter).filter(ContentFilter.name == 'Default')
+        content_filter = q.first()
+        if content_filter is None:
+            default_content_filter = ContentFilter()
+            default_content_filter.name = 'Default'
+            default_content_filter.private = False
+            default_content_filter.words = '["merda", "test", "ciao", "prova"]'
+            db.session.add(default_content_filter)
             db.session.commit()
 
     return app
