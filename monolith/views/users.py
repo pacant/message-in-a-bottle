@@ -32,7 +32,7 @@ def create_user():
                 db.session.commit()
                 return redirect('/')
             return render_template("create_user.html", emailError=True, form=form)
-    elif request.method == 'GET':
+    else:
         return render_template('create_user.html', form=form)
 
 
