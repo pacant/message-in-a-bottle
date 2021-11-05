@@ -5,4 +5,5 @@ env:
 install:
   - pip install tox
 script:
+  - docker run -d -p 6379:6379 redis
   - tox -e $TOX_ENV
