@@ -1,0 +1,75 @@
+
+<html>
+  <head>
+  <title>Add to blacklist</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+  <style>
+      body{
+          background-image: url(https://i.postimg.cc/YSgCg909/mare2.jpg);
+          background-size: cover;
+          }
+          #myInput {
+          width: 50%;
+          font-size: 16px;
+          padding: 12px 20px 12px 40px;
+          border: 1px solid #ddd; 
+          margin-bottom: 12px;
+        }
+
+        #myUL {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+        }
+        #myUL button:hover{
+          background-color: #eee; /* Add a hover effect to all links, except for headers */
+        }
+  </style>
+  </head>
+  <body>
+   {% include "menu.html" %}
+  <div class="container data" style="margin-left: 32%; margin-top: 8%;">
+    <h4 class="ml-3">Choose a user that you want to add to the blacklist</h4>
+    <br>
+    <input type="text" id="myInput" onkeyup="search()" placeholder="Search recipient">
+    <form method="post" action="/blacklist/add" class="inline">
+      <ul id="myUL">
+        {% for usr in users: %}
+        <li><input type="hidden" name="extra_submit_param" value="extra_submit_value">
+          <button type="submit" name="email" value={{usr.email}} class="list-group-item link-button w-50 rounded">
+              {{usr.email}}
+          </button></li>
+          {% endfor %}
+      </ul>
+    </form>
+  </div>
+</body>
+<script>
+  function search() {
+    // Declare variables
+    var input, filter, ul, li, button, i, txtValue;
+    input = document.getElementById('myInput');
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("myUL");
+    li = ul.getElementsByTagName('li');
+  
+    // Loop through all list items, and hide those who don't match the search query
+    for (i = 0; i < li.length; i++) {
+      button = li[i].getElementsByTagName("button")[0];
+      txtValue = button.textContent || button.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = "";
+      } else {
+        li[i].style.display = "none";
+      }
+    }
+  }
+  </script>
+</html>

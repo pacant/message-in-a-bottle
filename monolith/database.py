@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
@@ -13,7 +14,7 @@ class User(db.Model):
     firstname = db.Column(db.Unicode(128))
     lastname = db.Column(db.Unicode(128))
     password = db.Column(db.Unicode(128))
-    date_of_birth = db.Column(db.DateTime)
+    date_of_birth = db.Column(db.Date)
     is_active = db.Column(db.Boolean, default=True)
     is_admin = db.Column(db.Boolean, default=False)
     is_anonymous = False
@@ -37,15 +38,69 @@ class User(db.Model):
     def get_id(self):
         return self.id
 
+
 class Message(db.Model):
 
     __tablename__ = 'message'
 
-
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     text = db.Column(db.Unicode(128))
-    sender = db.Column(db.Unicode(128))
-    receiver = db.Column(db.Unicode(128))
-    draft = db.Column(db.Boolean, default = False)
+    id_sender = db.Column(db.Unicode(128), ForeignKey('user.id'))
+    id_receiver = db.Column(db.Unicode(128), ForeignKey('user.id'))
+    draft = db.Column(db.Boolean, default=False)
+    delivered = db.Column(db.Boolean, default=False)
+    date_delivery = db.Column(db.DateTime(timezone=True))
+
     def __init__(self, *args, **kw):
         super(Message, self).__init__(*args, **kw)
+
+
+class Blacklist(db.Model):
+
+    __tablename__ = 'blacklist'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_user = db.Column(db.Unicode(128), ForeignKey('user.id'))
+    id_blacklisted = db.Column(db.Unicode(128), ForeignKey('user.id'))
+
+    def __init__(self, *args, **kw):
+        super(Blacklist, self).__init__(*args, **kw)
+
+
+class Attachments(db.Model):
+
+    __tablename__ = 'attachments'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_message = db.Column(db.Unicode(128), ForeignKey('message.id'))
+    data = db.Column(db.LargeBinary)
+
+
+class ContentFilter(db.Model):
+
+    __tablename__ = 'content_filter'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.Unicode(128))
+    words = db.Column(db.Unicode(128))
+    private = db.Column(db.Boolean, default=False)
+
+    def __init__(self, *args, **kw):
+        super(ContentFilter, self).__init__(*args, **kw)
+
+
+class UserContentFilter(db.Model):
+
+    __tablename__ = 'user_content_filter'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_user = db.Column(db.Integer, ForeignKey('user.id'))
+    id_content_filter = db.Column(db.Integer, ForeignKey('content_filter.id'))
+    active = db.Column(db.Boolean, default=False)
+
+    def __init__(self, *args, **kw):
+        super(UserContentFilter, self).__init__(*args, **kw)
+
+    def create_all():
+        new_user_content_filter = UserContentFilter()
+        db.session.add(new_user_content_filter)
+        db.session.commit()
