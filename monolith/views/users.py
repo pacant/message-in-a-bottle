@@ -68,9 +68,14 @@ def get_user_content_filter_list():
     )
     content_filter_list = []
     for result in results:
-        content_filter_list.append({'id': result.ContentFilter.id, 'name': result.ContentFilter.name, 'words': result.ContentFilter.words, 'active': True if result.UserContentFilter and result.UserContentFilter.active else False})
+        content_filter_list.append({'id': result.ContentFilter.id,
+                                    'name': result.ContentFilter.name,
+                                    'words': result.ContentFilter.words,
+                                   'active': True if result.UserContentFilter and
+                                    result.UserContentFilter.active else False})
 
-    return {'list':content_filter_list}
+    return {'list': content_filter_list}
+
 
 @login_required
 @users.route('/userinfo/content_filter/<id_filter>', methods=['GET', 'PUT'])
@@ -82,25 +87,28 @@ def get_user_content_filter(id_filter):
     if content_filter is None:
         abort(404)
 
-    if content_filter.ContentFilter.private and content_filter.UserContentFilter.id_user!=current_user.id:
+    if content_filter.ContentFilter.private and content_filter.UserContentFilter.id_user != current_user.id:
         abort(403)
 
     if request.method == 'PUT':
-        active = request.form.get('active')=='true'
+        active = request.form.get('active') == 'true'
         print(active)
         if content_filter.UserContentFilter is None and active:
             new_user_content_filter = UserContentFilter()
-            new_user_content_filter.id_content_filter=id_filter
-            new_user_content_filter.id_user=current_user.id
-            new_user_content_filter.active=True
+            new_user_content_filter.id_content_filter = id_filter
+            new_user_content_filter.id_user = current_user.id
+            new_user_content_filter.active = True
             db.session.add(new_user_content_filter)
             db.session.commit()
         elif content_filter.UserContentFilter is not None:
-            content_filter.UserContentFilter.active=active
+            content_filter.UserContentFilter.active = active
             db.session.commit()
 
-    return {'id': content_filter.ContentFilter.id, 'name': content_filter.ContentFilter.name, 'words': content_filter.ContentFilter.words, 'active': True if content_filter.UserContentFilter and content_filter.UserContentFilter.active else False}
-
+    return {'id': content_filter.ContentFilter.id,
+            'name': content_filter.ContentFilter.name,
+            'words': content_filter.ContentFilter.words,
+            'active': True if content_filter.UserContentFilter and
+            content_filter.UserContentFilter.active else False}
 
 
 @login_required

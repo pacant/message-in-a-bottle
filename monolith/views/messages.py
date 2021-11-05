@@ -5,7 +5,9 @@ from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.background import send_message as send_message_task
-import base64, re, json
+import base64
+import re
+import json
 
 messages = Blueprint('messages', __name__)
 
@@ -94,7 +96,7 @@ def viewMessage(message_id):
             User.id == message.Message.id_receiver
         ).first()
 
-        #if message contains bad words it's not showed
+        # if message contains bad words it's not showed
         if int(message.Message.id_sender) != current_user.id:
             purified_message = purify_message(message.Message.text)
             if purified_message != message.Message.text:
@@ -150,6 +152,7 @@ def save_message(data):
 
     return message.id
 
+
 def purify_message(msg):
     if current_user is None or not hasattr(current_user, 'id'):
         return msg
@@ -172,5 +175,5 @@ def purify_message(msg):
         print(personal_filter.ContentFilter.words)
         for word in json.loads(personal_filter.ContentFilter.words):
             insensitive_word = re.compile(re.escape(word), re.IGNORECASE)
-            purified_message = insensitive_word.sub('*'*len(word), purified_message)
+            purified_message = insensitive_word.sub('*' * len(word), purified_message)
     return purified_message
