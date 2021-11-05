@@ -18,8 +18,15 @@ class TestApp(TestBase):
 
     def test_fadd_to_blacklist(self):
         self.login(self.sender, "1234")
+
+        reply = self.app.get('/blacklist/add')
+        self.assertIn(b'Choose a user', reply.data)
+
         reply = self.app.post('/blacklist/add', data=dict(email=self.receiver), follow_redirects=True)
         self.assertEqual(reply.status, '200 OK')
+        self.assertIn(b'prova1@gmail.com', reply.data)
+
+        reply = self.app.get('/blacklist/remove')
         self.assertIn(b'prova1@gmail.com', reply.data)
 
         reply=self.app.post('/blacklist/remove', data=dict(email=self.receiver), follow_redirects=True)
