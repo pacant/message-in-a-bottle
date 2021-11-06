@@ -2,7 +2,9 @@ language: python
 python: 3.9
 env:
   -TOX_ENV=py39
+  -COVERALLS_REPO_TOKEN=00dYofuTRywxk7wtFUzTLaKgID80KSqgs coveralls
 install:
   - pip install tox
 script:
+  - docker run -d -p 6379:6379 redis
   - tox -e $TOX_ENV

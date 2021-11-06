@@ -6,6 +6,7 @@ from flask_login import current_user
 
 NUM_REPORTS = 2
 
+
 users = Blueprint('users', __name__)
 
 
@@ -53,14 +54,92 @@ def delete_user():
 
 
 @login_required
-@users.route('/userinfo')
+@users.route('/userinfo', methods=["GET", "POST"])
 def get_user_info():
-    user = db.session.query(User).filter(current_user.id == User.id).all()
-    return render_template('user_info.html', user=user)
+    if request.method == "GET":
+        user = db.session.query(User).filter(current_user.id == User.id).first()
+        return render_template('user_info.html', user=user)
+    if request.method == "POST":
+        new_email = request.form["email"]
+        checkEmail = db.session.query(User).filter(User.email == new_email).all()
+        new_firstname = request.form["firstname"]
+        new_lastname = request.form["lastname"]
+        new_date_of_birth = datetime.strptime(request.form["date_of_birth"], '%Y-%m-%d').date()
+        new_password = request.form["password"]
+        user_dict = dict(email=new_email, firstname=new_firstname, lastname=new_lastname,
+                         date_of_birth=new_date_of_birth)
+        if checkEmail:
+            return render_template('user_info.html', emailError=True, user=user_dict)
+        user = db.session.query(User).filter(current_user.id == User.id)
+        if new_password != "":
+            user.first().set_password(new_password)
+        user.update(user_dict)
+        db.session.commit()
+        return render_template('user_info.html', user=user_dict)
 
 
-@login_required
-@users.route('/blacklist/add', methods=['GET', 'POST'])
+@ login_required
+@ users.route('/userinfo/content_filter')
+def get_user_content_filter_list():
+
+    list = db.session.query(UserContentFilter).filter(
+        UserContentFilter.id_user == current_user.id
+    ).all()
+
+    results = db.session.query(ContentFilter, UserContentFilter).filter(
+        ContentFilter.id.in_(list)
+    ).join(UserContentFilter, isouter=True).union_all(
+        db.session.query(ContentFilter, UserContentFilter).filter(
+            ContentFilter.private.is_(False)
+        ).join(UserContentFilter, isouter=True)
+    )
+    content_filter_list = []
+    for result in results:
+        content_filter_list.append({'id': result.ContentFilter.id,
+                                    'name': result.ContentFilter.name,
+                                    'words': result.ContentFilter.words,
+                                   'active': True if result.UserContentFilter and
+                                    result.UserContentFilter.active else False})
+
+    return {'list': content_filter_list}
+
+
+@ login_required
+@ users.route('/userinfo/content_filter/<id_filter>', methods=['GET', 'PUT'])
+def get_user_content_filter(id_filter):
+    content_filter = db.session.query(ContentFilter, UserContentFilter).filter(
+        ContentFilter.id == int(id_filter)
+    ).join(UserContentFilter, isouter=True).first()
+
+    if content_filter is None:
+        abort(404)
+
+    if content_filter.ContentFilter.private and content_filter.UserContentFilter.id_user != current_user.id:
+        abort(403)
+
+    if request.method == 'PUT':
+        active = request.form.get('active') == 'true'
+        print(active)
+        if content_filter.UserContentFilter is None and active:
+            new_user_content_filter = UserContentFilter()
+            new_user_content_filter.id_content_filter = id_filter
+            new_user_content_filter.id_user = current_user.id
+            new_user_content_filter.active = True
+            db.session.add(new_user_content_filter)
+            db.session.commit()
+        elif content_filter.UserContentFilter is not None:
+            content_filter.UserContentFilter.active = active
+            db.session.commit()
+
+    return {'id': content_filter.ContentFilter.id,
+            'name': content_filter.ContentFilter.name,
+            'words': content_filter.ContentFilter.words,
+            'active': True if content_filter.UserContentFilter and
+            content_filter.UserContentFilter.active else False}
+
+
+@ login_required
+@ users.route('/blacklist/add', methods=['GET', 'POST'])
 def add_user_to_blacklist():
     if request.method == 'POST':
         blacklist = Blacklist()
@@ -90,7 +169,7 @@ def get_blacklist():
 @users.route('/blacklist/remove', methods=['GET', 'POST'])
 def remove_user_from_blacklist():
     if request.method == 'POST':
-        email = request.form["radioEmail"]
+        email = request.form["email"]
         id_blklst = db.session.query(User.id).filter(User.email == email).all()
         db.session.query(Blacklist).filter(Blacklist.id_blacklisted == id_blklst[0].id).delete()
         db.session.commit()

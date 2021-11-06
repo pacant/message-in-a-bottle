@@ -1,11 +1,15 @@
 from flask import Blueprint, request, redirect, abort
 from flask_login.utils import login_required
-from monolith.database import Attachments, Message, User, Blacklist, db
+from monolith.database import ContentFilter, UserContentFilter, Attachments, Message, User, Blacklist, db
 from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.background import send_message as send_message_task
 import base64
+import re
+import json
+import smtplib
+
 messages = Blueprint('messages', __name__)
 
 
@@ -23,7 +27,7 @@ def send_draft(id_message):
         date = message.date_delivery.isoformat()
         text = message.text
         form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
-        return render_template("send_message.html", form=form)
+        return render_template("send_message.html", form=form
 
 
 @login_required
@@ -50,31 +54,28 @@ def draft():
 
 @ messages.route('/message/send/forward/<id_message>', methods=['POST'])
 def send_forward_msg(id_message):
-    if request.method == "POST":
-        recipient_message = request.form['recipient']
-        text = db.session.query(Message).filter(Message.id == id_message).first().text
-        form = dict(recipient=recipient_message, text=text, message_id=id_message)
-        return render_template("send_message.html", form=form, forward=True)
+    recipient_message = request.form['recipient']
+    text = db.session.query(Message).filter(Message.id == id_message).first().text
+    form = dict(recipient=recipient_message, text=text, message_id=id_message)
+    return render_template("send_message.html", form=form, forward=True)
 
 
 @login_required
 @ messages.route("/message/recipients", methods=["GET"])
 def chooseRecipient():
-    if request.method == "GET":
-        email = current_user.email
-        recipients = db.session.query(User).filter(User.email != email).filter(User.is_admin.is_(False))
-        form = dict(recipients=recipients)
-        return render_template("recipients.html", form=form)
+    email = current_user.email
+    recipients = db.session.query(User).filter(User.email != email).filter(User.is_admin.is_(False))
+    form = dict(recipients=recipients)
+    return render_template("recipients.html", form=form)
 
 
 @login_required
 @ messages.route('/message/recipients/<id_message>', methods=['GET'])
 def choose_recipient_msg(id_message):
-    if request.method == "GET":
-        email = current_user.email
-        recipients = db.session.query(User).filter(User.email != email)
-        form = dict(recipients=recipients, id_message=id_message)
-        return render_template("recipients.html", form=form)
+    email = current_user.email
+    recipients = db.session.query(User).filter(User.email != email)
+    form = dict(recipients=recipients, id_message=id_message)
+    return render_template("recipients.html", form=form)
 
 
 @login_required
@@ -92,6 +93,28 @@ def viewMessage(message_id):
         recipient = db.session.query(User).filter(
             User.id == message.Message.id_receiver
         ).first()
+        
+        if int(message.Message.id_receiver) == current_user.id and not message.Message.read:
+            # notify message reading
+            message.Message.read = True
+            db.session.commit()
+            try:
+                mailserver = smtplib.SMTP('smtp.office365.com', 587)
+                mailserver.ehlo()
+                mailserver.starttls()
+                mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
+                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:'+message.User.email+
+                '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n'+current_user.firstname+
+                ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
+                mailserver.quit()
+            except smtplib.SMTPRecipientsRefused:
+                print("ERROR: SMTPRecipientsRefused ("+message.User.email+")")
+
+        # if message contains bad words it's not showed
+        if int(message.Message.id_sender) != current_user.id:
+            purified_message = purify_message(message.Message.text)
+            if purified_message != message.Message.text:
+                message.Message.text = purified_message
 
         images_db = db.session.query(Attachments).filter(Attachments.id == message_id).all()
         images = []
@@ -142,3 +165,29 @@ def save_message(data):
     db.session.commit()
 
     return message.id
+
+
+def purify_message(msg):
+    if current_user is None or not hasattr(current_user, 'id'):
+        return msg
+
+    list = db.session.query(UserContentFilter.id_content_filter).filter(
+        UserContentFilter.id_user == current_user.id
+    )
+
+    personal_filters = db.session.query(ContentFilter, UserContentFilter).filter(
+        ContentFilter.id.in_(list)
+    ).join(UserContentFilter, isouter=True).union_all(
+        db.session.query(ContentFilter, UserContentFilter).filter(
+            ContentFilter.private.is_(False), UserContentFilter.active.is_(True)
+        ).join(UserContentFilter, isouter=True)
+    ).all()
+
+    purified_message = msg
+
+    for personal_filter in personal_filters:
+        print(personal_filter.ContentFilter.words)
+        for word in json.loads(personal_filter.ContentFilter.words):
+            insensitive_word = re.compile(re.escape(word), re.IGNORECASE)
+            purified_message = insensitive_word.sub('*' * len(word), purified_message)
+    return purified_message
