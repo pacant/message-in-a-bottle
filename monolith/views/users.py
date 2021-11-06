@@ -3,6 +3,7 @@ from flask_login.utils import login_required
 from monolith.database import UserContentFilter, ContentFilter, User, Blacklist, db
 from monolith.forms import UserForm
 from flask_login import current_user
+from datetime import datetime
 
 users = Blueprint('users', __name__)
 
@@ -45,14 +46,32 @@ def delete_user():
 
 
 @login_required
-@users.route('/userinfo')
+@users.route('/userinfo', methods=["GET", "POST"])
 def get_user_info():
-    user = db.session.query(User).filter(current_user.id == User.id).all()
-    return render_template('user_info.html', user=user)
+    if request.method == "GET":
+        user = db.session.query(User).filter(current_user.id == User.id).first()
+        return render_template('user_info.html', user=user)
+    if request.method == "POST":
+        new_email = request.form["email"]
+        checkEmail = db.session.query(User).filter(User.email == new_email).all()
+        new_firstname = request.form["firstname"]
+        new_lastname = request.form["lastname"]
+        new_date_of_birth = datetime.strptime(request.form["date_of_birth"], '%Y-%m-%d').date()
+        new_password = request.form["password"]
+        user_dict = dict(email=new_email, firstname=new_firstname, lastname=new_lastname,
+                         date_of_birth=new_date_of_birth)
+        if checkEmail:
+            return render_template('user_info.html', emailError=True, user=user_dict)
+        user = db.session.query(User).filter(current_user.id == User.id)
+        if new_password != "":
+            user.first().set_password(new_password)
+        user.update(user_dict)
+        db.session.commit()
+        return render_template('user_info.html', user=user_dict)
 
 
-@login_required
-@users.route('/userinfo/content_filter')
+@ login_required
+@ users.route('/userinfo/content_filter')
 def get_user_content_filter_list():
 
     list = db.session.query(UserContentFilter).filter(
@@ -77,8 +96,8 @@ def get_user_content_filter_list():
     return {'list': content_filter_list}
 
 
-@login_required
-@users.route('/userinfo/content_filter/<id_filter>', methods=['GET', 'PUT'])
+@ login_required
+@ users.route('/userinfo/content_filter/<id_filter>', methods=['GET', 'PUT'])
 def get_user_content_filter(id_filter):
     content_filter = db.session.query(ContentFilter, UserContentFilter).filter(
         ContentFilter.id == int(id_filter)
@@ -111,8 +130,8 @@ def get_user_content_filter(id_filter):
             content_filter.UserContentFilter.active else False}
 
 
-@login_required
-@users.route('/blacklist/add', methods=['GET', 'POST'])
+@ login_required
+@ users.route('/blacklist/add', methods=['GET', 'POST'])
 def add_user_to_blacklist():
     if request.method == 'POST':
         blacklist = Blacklist()
@@ -129,8 +148,8 @@ def add_user_to_blacklist():
         return render_template('add_to_blacklist.html', users=users)
 
 
-@login_required
-@users.route('/blacklist', methods=['GET'])
+@ login_required
+@ users.route('/blacklist', methods=['GET'])
 def get_blacklist():
     blacklist = db.session.query(Blacklist, User).filter(
         Blacklist.id_blacklisted == User.id).filter(

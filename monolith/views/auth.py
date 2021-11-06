@@ -11,10 +11,10 @@ auth = Blueprint('auth', __name__)
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        session["email"], session["password"] = form.data['email'], form.data['password']
-        q = db.session.query(User).filter(User.email == session["email"])
+        email, password = form.data['email'], form.data['password']
+        q = db.session.query(User).filter(User.email == email)
         user = q.first()
-        if user is not None and user.authenticate(session["password"]):
+        if user is not None and user.authenticate(password):
             login_user(user)
             return redirect('/')
     return render_template('login.html', form=form)
