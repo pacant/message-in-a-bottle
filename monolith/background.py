@@ -28,13 +28,17 @@ def send_message(id_message):
                 User.id == msg.id_receiver
             ).first()
 
-            mailserver = smtplib.SMTP('smtp.office365.com', 587)
-            mailserver.ehlo()
-            mailserver.starttls()
-            mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
-            mailserver.sendmail('squad03MIB@outlook.com', usr.email, 'Subject: New bottle received\n\nHey '+usr.firstname+',\n\
-                you just received a new message in a bottle.\nGreetings,\nThe MIB team')
-            mailserver.quit()
+            try:
+                mailserver = smtplib.SMTP('smtp.office365.com', 587)
+                mailserver.ehlo()
+                mailserver.starttls()
+                mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
+                mailserver.sendmail('squad03MIB@outlook.com', usr.email, 'To:'+usr.email+
+                    '\nFrom:squad03MIB@outlook.com\nSubject: New bottle received\n\nHey '+usr.firstname+
+                    ',\nyou just received a new message in a bottle.\n\nGreetings,\nThe MIB team')
+                mailserver.quit()
+            except smtplib.SMTPRecipientsRefused:
+                print("ERROR: SMTPRecipientsRefused ("+usr.email+")")
 
 
     else:

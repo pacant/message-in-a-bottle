@@ -101,13 +101,17 @@ def viewMessage(message_id):
             # notify message reading
             message.Message.read = True
             db.session.commit()
-            mailserver = smtplib.SMTP('smtp.office365.com', 587)
-            mailserver.ehlo()
-            mailserver.starttls()
-            mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
-            mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'Subject: Message reading notification\n\n'+current_user.firstname+'\
-have just read your message in a bottle.\nGreetings,\nThe MIB team')
-            mailserver.quit()
+            try:
+                mailserver = smtplib.SMTP('smtp.office365.com', 587)
+                mailserver.ehlo()
+                mailserver.starttls()
+                mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
+                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:'+message.User.email+
+                '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n'+current_user.firstname+
+                ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
+                mailserver.quit()
+            except smtplib.SMTPRecipientsRefused:
+                print("ERROR: SMTPRecipientsRefused ("+message.User.email+")")
 
         # if message contains bad words it's not showed
         if int(message.Message.id_sender) != current_user.id:
