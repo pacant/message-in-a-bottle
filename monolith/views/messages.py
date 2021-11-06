@@ -27,7 +27,7 @@ def send_draft(id_message):
         date = message.date_delivery.isoformat()
         text = message.text
         form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
-        return render_template("send_message.html", form=form)
+        return render_template("send_message.html", form=form
 
 
 @login_required

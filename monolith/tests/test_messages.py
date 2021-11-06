@@ -21,8 +21,7 @@ class TestApp(TestBase):
             date='2020-10-26T01:01',
             text='Draft message')
 
-        reply = self.app.post("/draft",
-                              data=message)
+        reply = self.app.post("/draft", data=message)
         self.assertEqual(reply.status, '302 FOUND')
 
         self.logout()

@@ -37,13 +37,14 @@
           <div class="col text-center">
             <img src="https://i.postimg.cc/yYDPy6Yz/MMIABgold.png" style="width: 55%; margin-bottom: 10px;">
 
-            {% if auth %}
-            <p class="lead text-center mb-2"><strong>Hi {{ current_user.firstname }}!</strong></p>
-              <a href="/logout" role="button" class="btn mt-2" style="background-color: #D35E5E;">Log Out</a>
-            {% else %}
-            <p class="lead text-center">Hi Anonymous</p>
-            <a href="/login" role="button" class="btn" style="background-color: 175D7E; color: aliceblue;">Log in</a> <a href="/create_user" role="button" class="btn" style="background-color: #E5BE6B;">Register</a>
-            {% endif %}
+        {% if ((auth) and (not is_reported)) %}
+        <p class="lead text-center mb-2"><strong>Hi {{ current_user.firstname }}!</strong></p>
+        <a href="/logout" role="button" class="btn mt-2" style="background-color: #D35E5E;">Log Out</a>
+        {% else %}
+        <p class="lead text-center">Hi Anonymous</p>
+        <a href="/login" role="button" class="btn" style="background-color: 175D7E; color: aliceblue;">Log in</a> <a
+          href="/create_user" role="button" class="btn" style="background-color: #E5BE6B;">Register</a>
+        {% endif %}
           
           </div>
         </div>
