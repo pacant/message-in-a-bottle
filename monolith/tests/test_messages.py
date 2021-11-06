@@ -5,7 +5,7 @@ import wtforms as f
 
 from monolith.database import db, User, Message
 from monolith.tests.test_base import TestBase
-
+from monolith.app import app as tested_app
 
 class TestApp(TestBase):
 
@@ -73,12 +73,17 @@ class TestApp(TestBase):
         message = dict(
             receiver=self.receiver,
             date='2020-10-26T01:01',
-            text='Test message')
+            text='Test message 1234')
 
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
         self.assertEqual(reply.status, '200 OK')
+
+        with tested_app.app_context():
+            result = db.session.query(Message).filter(
+                Message.text == 'Test message 1234').first()
+            self.assertEqual('Test message 1234', result.text) 
 
         self.logout()
 
@@ -118,8 +123,8 @@ class TestApp(TestBase):
                 text='test message image',
                 file=image)
 
-            reply = self.app.post("/message/send", content_type='multipart/form-data',data=message, follow_redirects=True)
+            reply = self.app.post("/message/send", content_type='multipart/form-data',
+                                  data=message, follow_redirects=True)
             reply = self.app.get('/mailbox/sent')
             self.assertIn(b"test message image", reply.data)
         self.logout()
-
