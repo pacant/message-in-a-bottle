@@ -8,6 +8,7 @@ from monolith.background import send_message as send_message_task
 import base64
 import re
 import json
+import smtplib
 
 messages = Blueprint('messages', __name__)
 
@@ -92,6 +93,22 @@ def viewMessage(message_id):
         recipient = db.session.query(User).filter(
             User.id == message.Message.id_receiver
         ).first()
+        
+        if int(message.Message.id_receiver) == current_user.id and not message.Message.read:
+            # notify message reading
+            message.Message.read = True
+            db.session.commit()
+            try:
+                mailserver = smtplib.SMTP('smtp.office365.com', 587)
+                mailserver.ehlo()
+                mailserver.starttls()
+                mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
+                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:'+message.User.email+
+                '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n'+current_user.firstname+
+                ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
+                mailserver.quit()
+            except smtplib.SMTPRecipientsRefused:
+                print("ERROR: SMTPRecipientsRefused ("+message.User.email+")")
 
         # if message contains bad words it's not showed
         if int(message.Message.id_sender) != current_user.id:

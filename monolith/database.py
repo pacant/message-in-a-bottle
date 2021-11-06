@@ -49,6 +49,7 @@ class Message(db.Model):
     id_receiver = db.Column(db.Unicode(128), ForeignKey('user.id'))
     draft = db.Column(db.Boolean, default=False)
     delivered = db.Column(db.Boolean, default=False)
+    read = db.Column(db.Boolean, default=False)
     date_delivery = db.Column(db.DateTime(timezone=True))
 
     def __init__(self, *args, **kw):
