@@ -95,26 +95,11 @@ def viewMessage(message_id):
         ).first()
 
         if int(message.Message.id_receiver) == current_user.id and not message.Message.read:
-            # notify message reading
-            message.Message.read = True
-            db.session.commit()
-            try:
-                mailserver = smtplib.SMTP('smtp.office365.com', 587)
-                mailserver.ehlo()
-                mailserver.starttls()
-                mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
-                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:' + message.User.email +
-                                    '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n' + current_user.firstname +
-                                    ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
-                mailserver.quit()
-            except smtplib.SMTPRecipientsRefused:
-                print("ERROR: SMTPRecipientsRefused (" + message.User.email + ")")
+            notify_msg_reading(message)
 
-        # if message contains bad words it's not showed
+        # if message contains bad words they are not showed
         if int(message.Message.id_sender) != current_user.id:
-            purified_message = purify_message(message.Message.text)
-            if purified_message != message.Message.text:
-                message.Message.text = purified_message
+            message.Message.text = purify_message(message.Message.text)
 
         images_db = db.session.query(Attachments).filter(Attachments.id == message_id).all()
         images = []
@@ -191,3 +176,20 @@ def purify_message(msg):
             insensitive_word = re.compile(re.escape(word), re.IGNORECASE)
             purified_message = insensitive_word.sub('*' * len(word), purified_message)
     return purified_message
+
+
+def notify_msg_reading(message):
+    message.Message.read = True
+    db.session.commit()
+    try:
+        mailserver = smtplib.SMTP('smtp.office365.com', 587)
+        mailserver.ehlo()
+        mailserver.starttls()
+        mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
+        mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:' + message.User.email +
+                            '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n' +
+                            current_user.firstname +
+                            ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
+        mailserver.quit()
+    except smtplib.SMTPRecipientsRefused:
+        print("ERROR: SMTPRecipientsRefused (" + message.User.email + ")")

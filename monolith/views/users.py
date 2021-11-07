@@ -36,17 +36,17 @@ def create_user():
                 User.lastname == new_user.lastname,
                 User.date_of_birth == new_user.date_of_birth,
                 User.is_reported.is_(True)).first()
-            
+
             if result:
                 return render_template("create_user.html", emailError=True, form=form)
             elif reported_user:
                 return render_template('create_user.html', form=form, is_reported=True)
-            
+
             new_user.set_password(form.password.data)
             db.session.add(new_user)
             db.session.commit()
             return redirect('/')
-            
+
     elif request.method == 'GET':
         return render_template('create_user.html', form=form)
 
@@ -54,7 +54,7 @@ def create_user():
 @login_required
 @users.route('/delete_user')
 def delete_user():
-    User.query.filter_by(id=current_user.id).update({"is_active":False})
+    User.query.filter_by(id=current_user.id).update({"is_active": False})
     db.session.commit()
     return redirect('/')
 
@@ -221,5 +221,5 @@ def report_user():
         report = db.session.query(User.id).join(Reports, Reports.id_reported == User.id).filter(
             Reports.id_user == current_user.id)
         users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(report)).filter(
-            User.is_reported == False)
+            User.is_reported.is_(False))
         return render_template('report_user.html', users=users)

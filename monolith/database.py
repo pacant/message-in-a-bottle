@@ -76,7 +76,7 @@ class Attachments(db.Model):
     id_message = db.Column(db.Unicode(128), ForeignKey('message.id'))
     data = db.Column(db.LargeBinary)
 
-    
+
 class Reports(db.Model):
 
     __tablename__ = 'reports'
@@ -88,7 +88,7 @@ class Reports(db.Model):
     def __init__(self, *args, **kw):
         super(Reports, self).__init__(*args, **kw)
 
-        
+
 class ContentFilter(db.Model):
 
     __tablename__ = 'content_filter'
