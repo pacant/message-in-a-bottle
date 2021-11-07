@@ -6,6 +6,8 @@ from monolith.forms import UserForm
 from flask_login import current_user
 import datetime
 
+from monolith.views.auth import login
+
 NUM_REPORTS = 2
 
 
@@ -233,12 +235,14 @@ def report_user():
         return render_template('report_user.html', users=users)
 
 
+@login_required
 @users.route('/lottery')
 def lottery_info():
     user = db.session.query(User).filter(current_user.id == User.id).first()
     return render_template("lottery.html", trials=user.trials, points=user.points)
 
 
+@login_required
 @users.route('/spin', methods=['GET', 'POST'])
 def spin_roulette():
     user = db.session.query(User).filter(current_user.id == User.id).first()

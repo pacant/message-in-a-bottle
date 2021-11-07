@@ -1,6 +1,7 @@
 import json
 
 from monolith.tests.test_base import TestBase
+from monolith.lottery import increase_trials
 
 
 class TestApp(TestBase):
@@ -83,7 +84,7 @@ class TestApp(TestBase):
         self.assertIn(b"Email already in use", reply.data)
 
         reply = self.app.post("/userinfo", data=dict(
-            email='new_'+self.sender,
+            email='new_' + self.sender,
             firstname='Prova_new',
             lastname='Prova_new',
             password='',
@@ -92,7 +93,7 @@ class TestApp(TestBase):
         self.assertIn(b"Prova_new", reply.data)
 
         reply = self.app.post("/userinfo", data=dict(
-            email='new_'+self.sender,
+            email='new_' + self.sender,
             firstname='Prova_new',
             lastname='Prova_new',
             password='12345',
@@ -101,7 +102,7 @@ class TestApp(TestBase):
 
         self.logout()
 
-        reply = self.login("new_"+self.sender, "12345")
+        reply = self.login("new_" + self.sender, "12345")
         self.assertIn(b'Hi Prova_new', reply.data)
 
         reply = self.app.post("/userinfo", data=dict(
@@ -149,3 +150,13 @@ class TestApp(TestBase):
                               ),
                               follow_redirects=True)
         self.assertIn(b'You have been suspended!', reply.data)
+
+    def test_increase(self):
+        self.login(self.sender, "1234")
+        self.app.get("/lottery")
+        increase_trials.apply()
+        reply = self.app.post("/spin")
+        self.assertIn(b"YOU WON",reply.data)
+        reply = self.app.post("/spin")
+        self.assertNotIn(b"YOU WON",reply.data)
+        self.logout()
