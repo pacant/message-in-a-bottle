@@ -27,7 +27,7 @@ def send_draft(id_message):
         date = message.date_delivery.isoformat()
         text = message.text
         form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
-        return render_template("send_message.html", form=form
+        return render_template("send_message.html", form=form)
 
 
 @login_required
@@ -93,7 +93,7 @@ def viewMessage(message_id):
         recipient = db.session.query(User).filter(
             User.id == message.Message.id_receiver
         ).first()
-        
+
         if int(message.Message.id_receiver) == current_user.id and not message.Message.read:
             # notify message reading
             message.Message.read = True
@@ -103,12 +103,12 @@ def viewMessage(message_id):
                 mailserver.ehlo()
                 mailserver.starttls()
                 mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
-                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:'+message.User.email+
-                '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n'+current_user.firstname+
-                ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
+                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:' + message.User.email +
+                                    '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n' + current_user.firstname +
+                                    ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
                 mailserver.quit()
             except smtplib.SMTPRecipientsRefused:
-                print("ERROR: SMTPRecipientsRefused ("+message.User.email+")")
+                print("ERROR: SMTPRecipientsRefused (" + message.User.email + ")")
 
         # if message contains bad words it's not showed
         if int(message.Message.id_sender) != current_user.id:
