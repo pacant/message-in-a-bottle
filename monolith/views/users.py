@@ -1,3 +1,4 @@
+import random
 from flask import Blueprint, redirect, render_template, request, abort
 from flask_login.utils import login_required
 from monolith.database import User, Blacklist, Reports, ContentFilter, UserContentFilter, db
@@ -230,3 +231,22 @@ def report_user():
         users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(report)).filter(
             User.is_reported.is_(False))
         return render_template('report_user.html', users=users)
+
+
+@users.route('/lottery')
+def lottery_info():
+    user = db.session.query(User).filter(current_user.id == User.id).first()
+    return render_template("lottery.html", trials=user.trials, points=user.points)
+
+
+@users.route('/spin', methods=['GET', 'POST'])
+def spin_roulette():
+    user = db.session.query(User).filter(current_user.id == User.id).first()
+    if user.trials > 0:
+        prizes = [10, 20, 40, 80]
+        prize = random.choice(prizes)
+        db.session.query(User).filter(current_user.id == User.id).update(
+            {"points": User.points + prize, "trials": User.trials - 1})
+        db.session.commit()
+        return render_template("lottery.html", trials=user.trials, prize=prize, points=user.points)
+    return redirect("/lottery")

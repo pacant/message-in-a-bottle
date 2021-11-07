@@ -37,6 +37,9 @@
                                 <tr>
                                     <td> <a href="/message/{{i[0].id}}">{{ i[0].text }}</a></td>
                                     <td>{{ i[1].email }}</td>
+                                    {% if not i[0].delivered and current_user.points > 10%}
+                                    <td><a class="btn btn-danger" href="/message/withdraw/{{i[0].id}}" role="button">Withdraw</a></td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>

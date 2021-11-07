@@ -193,3 +193,24 @@ def notify_msg_reading(message):
         mailserver.quit()
     except smtplib.SMTPRecipientsRefused:
         print("ERROR: SMTPRecipientsRefused (" + message.User.email + ")")
+
+
+@login_required
+@messages.route("/message/withdraw/<id>")
+def withdraw_message(id):
+    message_query = db.session.query(Message, User).filter(
+        Message.id == int(id)
+    ).join(User, Message.id_sender == User.id)
+    message = message_query.first()
+
+    if message is None or (int(message.Message.id_receiver) == current_user.id):
+        abort(404)
+    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
+        abort(403)
+    elif (message.Message.delivered is True) or (message.User.points < 10):
+        return redirect("/mailbox/sent")
+    else:
+        db.session.query(User).filter(User.id == current_user.id).update({"points": User.points - 10})
+        db.session.query(Message).filter(Message.id == int(id)).delete()
+        db.session.commit()
+        return redirect('/mailbox/sent')
