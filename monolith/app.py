@@ -21,7 +21,6 @@ def create_app():
     login_manager.init_app(app)
     db.create_all(app=app)
 
-    # create a first admin user
     with app.app_context():
         q = db.session.query(ContentFilter).filter(ContentFilter.name == 'Default')
         content_filter = q.first()

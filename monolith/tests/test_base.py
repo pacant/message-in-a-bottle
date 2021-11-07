@@ -1,13 +1,19 @@
 import unittest
 
 from monolith.app import app as tested_app
-from monolith.database import db, User, Message
+from monolith.database import db, User, Message, ContentFilter
 from monolith.views.messages import draft
 
 
 class TestBase(unittest.TestCase):
     tested_app.config['WTF_CSRF_ENABLED'] = False
     app = tested_app.test_client()
+
+    def test_default_content_filter(self):
+        with tested_app.app_context():
+            id = db.session.query(ContentFilter).filter(ContentFilter.name == 'Default').first().id
+            self.assertEqual(int(id), 1)
+        
 
     sender = "prova@gmail.com"
     receiver = "prova1@gmail.com"
