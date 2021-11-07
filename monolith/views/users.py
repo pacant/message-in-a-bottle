@@ -30,24 +30,30 @@ def create_user():
             s is a secret key.
             """
             result = db.session.query(User).filter(User.email == new_user.email, User.is_active.is_(True)).all()
+            '''
             reported_user = db.session.query(User).filter(
                 User.email == new_user.email,
                 User.firstname == new_user.firstname,
                 User.lastname == new_user.lastname,
                 User.date_of_birth == new_user.date_of_birth,
                 User.is_reported.is_(True)).first()
+            '''
+            reported_user = db.session.query(User).filter(
+                User.email == new_user.email,
+                User.is_reported.is_(True)).first()
 
-            if result:
-                return render_template("create_user.html", emailError=True, form=form)
-            elif reported_user:
+            if reported_user:
                 return render_template('create_user.html', form=form, is_reported=True)
-
-            new_user.set_password(form.password.data)
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect('/')
-
-    elif request.method == 'GET':
+            elif result:
+                return render_template("create_user.html", emailError=True, form=form)
+            else:
+                new_user.set_password(form.password.data)
+                db.session.add(new_user)
+                db.session.commit()
+                return redirect('/')
+        else:
+            abort(400)
+    else:
         return render_template('create_user.html', form=form)
 
 
@@ -65,7 +71,7 @@ def get_user_info():
     if request.method == "GET":
         user = db.session.query(User).filter(current_user.id == User.id).first()
         return render_template('user_info.html', user=user)
-    if request.method == "POST":
+    else:
         new_email = request.form["email"]
         checkEmail = db.session.query(User).filter(User.email == new_email).filter(current_user.id != User.id).all()
         new_firstname = request.form["firstname"]
@@ -100,11 +106,11 @@ def get_user_content_filter_list():
         ).join(UserContentFilter, isouter=True)
     )
     content_filter_list = []
+#                                    'words': result.ContentFilter.words,
     for result in results:
         content_filter_list.append({'id': result.ContentFilter.id,
                                     'name': result.ContentFilter.name,
-                                    'words': result.ContentFilter.words,
-                                   'active': True if result.UserContentFilter and
+                                    'active': True if result.UserContentFilter and
                                     result.UserContentFilter.active else False})
 
     return {'list': content_filter_list}
@@ -120,12 +126,12 @@ def get_user_content_filter(id_filter):
     if content_filter is None:
         abort(404)
 
-    if content_filter.ContentFilter.private and content_filter.UserContentFilter.id_user != current_user.id:
-        abort(403)
+#   if content_filter.ContentFilter.private and content_filter.UserContentFilter.id_user != current_user.id:
+#       abort(403)
 
+    new_user_content_filter = None
     if request.method == 'PUT':
         active = request.form.get('active') == 'true'
-        print(active)
         if content_filter.UserContentFilter is None and active:
             new_user_content_filter = UserContentFilter()
             new_user_content_filter.id_content_filter = id_filter
@@ -137,11 +143,12 @@ def get_user_content_filter(id_filter):
             content_filter.UserContentFilter.active = active
             db.session.commit()
 
+#            'words': content_filter.ContentFilter.words,
     return {'id': content_filter.ContentFilter.id,
             'name': content_filter.ContentFilter.name,
-            'words': content_filter.ContentFilter.words,
-            'active': True if content_filter.UserContentFilter and
-            content_filter.UserContentFilter.active else False}
+            'active': True if (content_filter.UserContentFilter and content_filter.UserContentFilter.active) or
+                              (new_user_content_filter and new_user_content_filter.active)
+            else False}
 
 
 @ login_required
