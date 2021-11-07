@@ -15,7 +15,7 @@ def login():
         session["email"], session["password"] = form.data['email'], form.data['password']
         q = db.session.query(User).filter(User.email == session["email"])
         user = q.first()
-        if user.is_reported:
+        if user is not None and user.is_reported:
             is_reported = True
             return redirect('/create_user')
         if user is not None and user.authenticate(session["password"]):
