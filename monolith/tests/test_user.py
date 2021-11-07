@@ -52,8 +52,19 @@ class TestApp(TestBase):
 
     def test_user_info(self):
         self.login(self.sender, "1234")
+
         reply = self.app.get("/userinfo")
         self.assertIn(b'Profile', reply.data)
+
+        reply = self.app.post("/userinfo", data=dict(
+            email='prova1@gmail.com',
+            firstname='Prova_new',
+            lastname='Prova_new',
+            password='12345',
+            date_of_birth='2001-01-01'
+        ))
+        self.assertIn(b"Email already in use", reply.data)
+
         reply = self.app.post("/userinfo", data=dict(
             email='prova_new@gmail.com',
             firstname='Prova_new',
@@ -62,7 +73,10 @@ class TestApp(TestBase):
             date_of_birth='2001-01-01'
         ))
         self.assertIn(b"Prova_new", reply.data)
+
         self.logout()
+
         reply = self.login('prova_new@gmail.com', "12345")
         self.assertIn(b'Hi Prova_new', reply.data)
+
         self.logout()
