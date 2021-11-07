@@ -29,10 +29,10 @@ class User(db.Model):
 
     @property
     def is_authenticated(self):
-        return self._authenticated
+        return self.is_active and self._authenticated
 
     def authenticate(self, password):
-        checked = check_password_hash(self.password, password)
+        checked = self.is_active and check_password_hash(self.password, password)
         self._authenticated = checked
         return self._authenticated
 

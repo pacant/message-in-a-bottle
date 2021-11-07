@@ -13,7 +13,7 @@ users = Blueprint('users', __name__)
 
 @users.route('/users')
 def _users():
-    _users = db.session.query(User)
+    _users = db.session.query(User).filter(User.is_active.is_(True))
     return render_template("users.html", users=_users)
 
 
@@ -29,19 +29,24 @@ def create_user():
             where x is in [md5, sha1, bcrypt], the hashed_password should be = x(password + s) where
             s is a secret key.
             """
-            result = db.session.query(User).filter(User.email == new_user.email).all()
-            reported_user = db.session.query(User).filter(User.email == new_user.email).filter(
-                User.firstname == new_user.firstname).filter(
-                    User.lastname == new_user.lastname).filter(User.date_of_birth == new_user.date_of_birth).first()
-            if not result and not reported_user:
-                new_user.set_password(form.password.data)
-                db.session.add(new_user)
-                db.session.commit()
-                return redirect('/')
-            elif reported_user.is_reported:
-                is_reported = True
-                return render_template('create_user.html', form=form, is_reported=is_reported)
-            return render_template("create_user.html", emailError=True, form=form)
+            result = db.session.query(User).filter(User.email == new_user.email, User.is_active.is_(True)).all()
+            reported_user = db.session.query(User).filter(
+                User.email == new_user.email,
+                User.firstname == new_user.firstname,
+                User.lastname == new_user.lastname,
+                User.date_of_birth == new_user.date_of_birth,
+                User.is_reported.is_(True)).first()
+            
+            if result:
+                return render_template("create_user.html", emailError=True, form=form)
+            elif reported_user:
+                return render_template('create_user.html', form=form, is_reported=True)
+            
+            new_user.set_password(form.password.data)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect('/')
+            
     elif request.method == 'GET':
         return render_template('create_user.html', form=form)
 
@@ -49,7 +54,7 @@ def create_user():
 @login_required
 @users.route('/delete_user')
 def delete_user():
-    User.query.filter_by(id=current_user.id).delete()
+    User.query.filter_by(id=current_user.id).update({"is_active":False})
     db.session.commit()
     return redirect('/')
 
