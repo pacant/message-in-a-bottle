@@ -1,8 +1,9 @@
-from flask import Blueprint, redirect, render_template, request
-from flask_login.utils import login_fresh, login_required
-from monolith.database import User, Blacklist, Reports, db
+from flask import Blueprint, redirect, render_template, request, abort
+from flask_login.utils import login_required
+from monolith.database import User, Blacklist, Reports, ContentFilter, UserContentFilter, db
 from monolith.forms import UserForm
 from flask_login import current_user
+import datetime
 
 NUM_REPORTS = 2
 
