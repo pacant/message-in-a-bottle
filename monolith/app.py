@@ -3,6 +3,7 @@ from flask import Flask
 from monolith.auth import login_manager
 from monolith.database import ContentFilter, db
 from monolith.views import blueprints
+import json
 
 
 def create_app():
@@ -28,7 +29,13 @@ def create_app():
             default_content_filter = ContentFilter()
             default_content_filter.name = 'Default'
             default_content_filter.private = False
-            default_content_filter.words = '["merda", "test", "ciao", "prova"]'
+            word_list = []
+            file1 = open('monolith/badwords.txt', 'r')
+            Lines = file1.readlines()
+            for line in Lines:
+                word_list.append(line.strip())
+            word_list.sort()
+            default_content_filter.words = json.dumps(word_list)
             db.session.add(default_content_filter)
             db.session.commit()
 
