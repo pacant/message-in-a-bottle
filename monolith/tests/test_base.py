@@ -11,6 +11,7 @@ class TestBase(unittest.TestCase):
 
     sender = "prova@gmail.com"
     receiver = "prova1@gmail.com"
+    other = "prova2@gmail.com"
 
     def register(self, email, firstname, lastname, password, dateofbirdth):
         return self.app.post("/create_user",
@@ -50,6 +51,16 @@ class TestBase(unittest.TestCase):
     app.post("/create_user",
              data=dict(
                  email=receiver,
+                 firstname="Prova",
+                 lastname="Prova",
+                 password="1234",
+                 dateofbirth="01/01/2001"
+             ),
+             follow_redirects=True)
+
+    app.post("/create_user",
+             data=dict(
+                 email=other,
                  firstname="Prova",
                  lastname="Prova",
                  password="1234",

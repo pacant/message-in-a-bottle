@@ -78,8 +78,8 @@ def choose_recipient_msg(id_message):
     return render_template("recipients.html", form=form)
 
 
-@login_required
 @messages.route('/message/<message_id>')
+@login_required
 def viewMessage(message_id):
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
@@ -125,6 +125,8 @@ def send_message_async(data):
 
     if not result:
         send_message_task.apply_async((id_message,), eta=date)
+    else:
+        return
 
 
 def save_message(data):
@@ -153,9 +155,6 @@ def save_message(data):
 
 
 def purify_message(msg):
-    if current_user is None or not hasattr(current_user, 'id'):
-        return msg
-
     list = db.session.query(UserContentFilter.id_content_filter).filter(
         UserContentFilter.id_user == current_user.id
     )
@@ -171,7 +170,6 @@ def purify_message(msg):
     purified_message = msg
 
     for personal_filter in personal_filters:
-        print(personal_filter.ContentFilter.words)
         for word in json.loads(personal_filter.ContentFilter.words):
             insensitive_word = re.compile(re.escape(word), re.IGNORECASE)
             purified_message = insensitive_word.sub('*' * len(word), purified_message)
@@ -191,8 +189,8 @@ def notify_msg_reading(message):
                             current_user.firstname +
                             ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
         mailserver.quit()
-    except smtplib.SMTPRecipientsRefused:
-        print("ERROR: SMTPRecipientsRefused (" + message.User.email + ")")
+    except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError) as e:
+        print("ERROR: " + str(e))
 
 
 @login_required

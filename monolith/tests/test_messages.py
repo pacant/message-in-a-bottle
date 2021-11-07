@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 import pytest
 import unittest
 import wtforms as f
@@ -62,8 +62,9 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
-        #self.assertEqual(reply.status, '400 Bad Request')
+        self.assertEqual(reply.status, '400 Bad Request')
         self.logout()
+
 
     def test_message_send_recipient_is_sender(self):
 
@@ -77,25 +78,114 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
+        self.assertEqual(reply.status, '400 Bad Request')
+
+        self.logout()
+
+
+    def test_message_view(self):
+        self.login(self.sender, "1234")
+
+        msg_date=(datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        message = dict(
+            receiver=self.receiver,
+            date=msg_date,
+            text='test_message_view_'+msg_date)
+
+        reply = self.app.post("/message/send",
+                              data=message,
+                              follow_redirects=True)
+        self.assertEqual(reply.status, '200 OK')
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.get("/message/" + str(id))
         self.assertEqual(reply.status, '200 OK')
 
         self.logout()
 
-    def test_message_view(self):
+        self.login(self.receiver, '1234')
 
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '200 OK')
+
+        self.logout()
+
+    def test_message_view_not_delivered(self):
         self.login(self.sender, "1234")
 
-        id = 4
+        msg_date=(datetime.datetime.now()+datetime.timedelta(days=1)).isoformat()
+        message = dict(
+            receiver=self.receiver,
+            date=msg_date,
+            text='test_message_view_not_delivered_'+msg_date)
+
+        reply = self.app.post("/message/send",
+                              data=message,
+                              follow_redirects=True)
+        self.assertEqual(reply.status, '200 OK')
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '200 OK')
+
+        self.logout()
+
+        self.login(self.receiver, '1234')
+
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '404 NOT FOUND')
+
+        self.logout()
+    
+
+    def test_message_view_unauthorized(self):
+        self.login(self.sender, "1234")
+
+        msg_date=(datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        message = dict(
+            receiver=self.receiver,
+            date=msg_date,
+            text='test_message_view_unauthorized_'+msg_date)
+
+        reply = self.app.post("/message/send",
+                              data=message,
+                              follow_redirects=True)
+        self.assertEqual(reply.status, '200 OK')
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        self.logout()
+
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '401 UNAUTHORIZED')
+
+        self.login(self.other, '1234')
 
         reply = self.app.get("/message/" + str(id))
         self.assertEqual(reply.status, '403 FORBIDDEN')
 
-        reply = self.app.get("/message/" + str(id - 2748923748927489))
+        self.logout()
+    
+
+    def test_message_view_not_found(self):
+        self.login(self.sender, '1234')
+
+        reply = self.app.get("/message/" + str(2748923748927489))
         self.assertEqual(reply.status, '404 NOT FOUND')
 
-        reply = self.app.get("/message/2")
-
         self.logout()
+
 
     def test_recipients(self):
 
@@ -116,14 +206,29 @@ class TestApp(TestBase):
             message = dict(
                 receiver=self.receiver,
                 date='2020-10-26t01:01',
-                text='test message image',
+                text='test_send_image',
                 file=image)
 
             reply = self.app.post("/message/send", content_type='multipart/form-data',
                                   data=message, follow_redirects=True)
             reply = self.app.get('/mailbox/sent')
-            self.assertIn(b"test message image", reply.data)
-        self.logout()
+            self.assertIn(b"test_send_image", reply.data)
+        
+            self.logout()
+
+            id = 0
+            from monolith.app import app
+            with app.app_context():
+                id = db.session.query(Message).filter(Message.text == 'test_send_image').first().id
+
+            self.login(self.receiver, '1234')
+
+            reply = self.app.get("/message/" + str(id))
+            self.assertEqual(reply.status, '200 OK')
+            import base64
+            self.assertIn(base64.b64encode(f), reply.data)
+
+            self.logout()
 
     def test_forward(self):
         self.login(self.sender, '1234')

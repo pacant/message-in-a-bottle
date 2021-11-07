@@ -6,8 +6,6 @@ from monolith.forms import UserForm
 from flask_login import current_user
 import datetime
 
-from monolith.views.auth import login
-
 NUM_REPORTS = 2
 
 

@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, redirect, render_template, abort
 from flask_login import login_user, logout_user
 
 from monolith.database import User, db
@@ -21,6 +21,8 @@ def login():
         if not is_reported and active_user is not None and active_user.authenticate(password):
             login_user(active_user)
             return redirect('/')
+    else:
+        abort(400)
     return render_template('login.html', form=form, is_reported=is_reported)
 
 

@@ -34,7 +34,7 @@ def create_app():
             Lines = file1.readlines()
             for line in Lines:
                 word_list.append(line.strip())
-            word_list.sort()
+            word_list.sort(key=lambda el: len(el))
             default_content_filter.words = json.dumps(word_list)
             db.session.add(default_content_filter)
             db.session.commit()

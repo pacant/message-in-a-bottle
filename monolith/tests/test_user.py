@@ -1,10 +1,20 @@
-import json
+import datetime
 
+from monolith.database import db, User, Message
 from monolith.tests.test_base import TestBase
 from monolith.lottery import increase_trials
 
 
 class TestApp(TestBase):
+    def test_login(self):
+        reply = self.app.post("/login",
+                    data=dict(
+                        email="email",
+                        pasword="password"
+                    ),
+                    follow_redirects=True)
+        self.assertEqual(reply.status, '400 BAD REQUEST')
+
     def test_user_list(self):
         self.login(self.sender, "1234")
         reply = self.app.get("/users")
@@ -67,6 +77,54 @@ class TestApp(TestBase):
         self.assertIn(b'id', reply.data)
 
         self.logout()
+
+
+    def test_message_view_content_filter(self):
+        self.login(self.sender, "1234")
+
+        msg_date=(datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        message = dict(
+            receiver=self.receiver,
+            date=msg_date,
+            text='test_message_view_content_filter_'+msg_date+' merda')
+
+        reply = self.app.post("/message/send",
+                              data=message,
+                              follow_redirects=True)
+        self.assertEqual(reply.status, '200 OK')
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '200 OK')
+
+        self.logout()
+
+        self.login(self.receiver, '1234')
+
+        reply = self.app.put('/userinfo/content_filter/1', data=dict(active='true'))
+        self.assertIn(b'"active":true', reply.data)
+
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '200 OK')
+        self.assertIn(b'*****', reply.data)
+
+        reply = self.app.get("/mailbox/received")
+        self.assertEqual(reply.status, '200 OK')
+        self.assertIn(b'*****', reply.data)
+
+        reply = self.app.put('/userinfo/content_filter/1', data=dict(active='false'))
+        self.assertIn(b'"active":false', reply.data)
+
+        reply = self.app.get("/message/" + str(id))
+        self.assertEqual(reply.status, '200 OK')
+        self.assertIn(b'merda', reply.data)
+
+        self.logout()
+
 
     def test_user_info(self):
         self.login(self.sender, "1234")
