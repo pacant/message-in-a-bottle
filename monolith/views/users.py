@@ -67,10 +67,10 @@ def get_user_info():
         return render_template('user_info.html', user=user)
     if request.method == "POST":
         new_email = request.form["email"]
-        checkEmail = db.session.query(User).filter(User.email == new_email).all()
+        checkEmail = db.session.query(User).filter(User.email == new_email).filter(current_user.id != User.id).all()
         new_firstname = request.form["firstname"]
         new_lastname = request.form["lastname"]
-        new_date_of_birth = datetime.strptime(request.form["date_of_birth"], '%Y-%m-%d').date()
+        new_date_of_birth = datetime.datetime.strptime(request.form["date_of_birth"], '%Y-%m-%d').date()
         new_password = request.form["password"]
         user_dict = dict(email=new_email, firstname=new_firstname, lastname=new_lastname,
                          date_of_birth=new_date_of_birth)

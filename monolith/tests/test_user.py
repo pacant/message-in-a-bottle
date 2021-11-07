@@ -4,12 +4,6 @@ from monolith.tests.test_base import TestBase
 
 
 class TestApp(TestBase):
-    def test_user_info(self):
-        self.login(self.sender, "1234")
-        reply = self.app.get("/userinfo")
-        self.assertIn(b'Profile info', reply.data)
-        self.logout()
-
     def test_user_list(self):
         self.login(self.sender, "1234")
         reply = self.app.get("/users")
@@ -54,4 +48,21 @@ class TestApp(TestBase):
         reply = self.app.get('/userinfo/content_filter/1')
         self.assertIn(b'id', reply.data)
 
+        self.logout()
+
+    def test_user_info(self):
+        self.login(self.sender, "1234")
+        reply = self.app.get("/userinfo")
+        self.assertIn(b'Profile', reply.data)
+        reply = self.app.post("/userinfo", data=dict(
+            email='prova_new@gmail.com',
+            firstname='Prova_new',
+            lastname='Prova_new',
+            password='12345',
+            date_of_birth='2001-01-01'
+        ))
+        self.assertIn(b"Prova_new", reply.data)
+        self.logout()
+        reply = self.login('prova_new@gmail.com', "12345")
+        self.assertIn(b'Hi Prova_new', reply.data)
         self.logout()

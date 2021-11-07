@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, session
+from flask import Blueprint, redirect, render_template
 from flask_login import login_user, logout_user
 
 from monolith.database import User, db
@@ -12,13 +12,13 @@ def login():
     is_reported = False
     form = LoginForm()
     if form.validate_on_submit():
-        session["email"], session["password"] = form.data['email'], form.data['password']
-        q = db.session.query(User).filter(User.email == session["email"], User.is_active.is_(True))
+        email, password = form.data['email'], form.data['password']
+        q = db.session.query(User).filter(User.email == email, User.is_active.is_(True))
         user = q.first()
         if user is not None and user.is_reported:
             is_reported = True
             return redirect('/create_user')
-        if user is not None and user.authenticate(session["password"]):
+        if user is not None and user.authenticate(password):
             login_user(user)
             return redirect('/')
     return render_template('login.html', form=form, is_reported=is_reported)
