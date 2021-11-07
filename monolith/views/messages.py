@@ -34,7 +34,17 @@ def send_draft(id_message):
 @ messages.route('/message/send', methods=['GET', 'POST'])
 def send_message():
     if request.method == 'POST':
-        send_message_async(request.form)
+        emails = request.form.get('receiver').split(';')
+        print(emails)
+
+        for email in emails:
+            new_form = dict(
+                receiver=email,
+                date=request.form.get('date'),
+                text=request.form.get('text')
+            )
+            send_message_async(new_form)
+
         return render_template("send_message.html", form=dict(), message_ok=True)
     else:
         # landing from the recipients page, we want to populate the field with the chosen one
@@ -130,12 +140,14 @@ def viewMessage(message_id):
 
 
 def send_message_async(data):
-    email = request.form['receiver']
-    recipient = db.session.query(User.id).filter(User.email == email).all()
+    email = data['receiver']
+    recipient = db.session.query(User).filter(User.email == email).all()
+    print(recipient)
     result = db.session.query(Blacklist).filter(
         Blacklist.id_user == recipient[0].id).filter(
             Blacklist.id_blacklisted == current_user.id).all()
     date = parser.parse(data['date'] + '+0200')
+    id_receiver = db.session.query(User).filter(User.email == email).first().id
     id_message = save_message(data)
 
     if not result:
