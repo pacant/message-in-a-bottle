@@ -21,7 +21,7 @@ def see_sent_messages():
 def see_received_messages():
     msgs_rcv = db.session.query(Message, User).filter(
         Message.id_sender == User.id).filter(
-            Message.id_receiver == current_user.id).filter(Message.delivered).all()
+            Message.id_receiver == current_user.id).filter(Message.delivered).filter(Message.deleted.is_(False)).all()
     for message in msgs_rcv:
         purified_message = purify_message(message.Message.text)
         if purified_message != message.Message.text:

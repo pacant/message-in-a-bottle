@@ -25,6 +25,7 @@
             <h2>Sent Messages</h2>
             <br>
                 {% if msgs_sent  %}
+                <form method="POST">
                     <table class="table table-striped" style="background-color: aliceblue;">
                         <thead>
                             <tr>
@@ -38,12 +39,13 @@
                                     <td> <a href="/message/{{i[0].id}}">{{ i[0].text }}</a></td>
                                     <td>{{ i[1].email }}</td>
                                     {% if not i[0].delivered and current_user.points > 10%}
-                                    <td><a class="btn btn-danger" href="/message/withdraw/{{i[0].id}}" role="button">Withdraw</a></td>
+                                    <td><input class="btn btn-primary" formaction = "/message/withdraw/{{i[0].id}}" type="submit" value="Withdraw"></td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                </form>
                 {% else %}
                     <p>No messages sent !</p>
                 {% endif %} 

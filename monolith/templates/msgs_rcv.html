@@ -23,6 +23,7 @@
             <h2>Received Messages</h2>
             <br>
                 {% if msgs_rcv  %}
+                <form method="POST">
                     <table class="table table-striped" style="background-color: aliceblue;">
                         <thead>
                             <tr>
@@ -35,15 +36,17 @@
                                 <tr>
                                     <td><a href="/message/{{i[0].id}}">{{ i[0].text }}</a></td>
                                     <td>{{ i[1].email }}</td>
+                                    <td><input class="btn btn-danger" formaction = "/message/{{i[0].id}}/delete" type="submit" value="Delete"></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                </form>
                 {% else %}
                     <p>No messages received !</p>
-                {% endif %} 
+                {% endif %}
         </div>
-        
+
         </body>
 </html>
 

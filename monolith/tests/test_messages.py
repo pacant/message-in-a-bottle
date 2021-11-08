@@ -50,12 +50,13 @@ class TestApp(TestBase):
 
         self.logout()
 
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_message_send_recipient_not_exists(self):
 
         self.login(self.sender, "1234")
 
         message = dict(
-            receiver=self.receiver,
+            receiver="mailnotexists@gmail.com",
             date='2020-10-26T01:01',
             text='Test message')
 
@@ -65,12 +66,13 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '400 Bad Request')
         self.logout()
 
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_message_send_recipient_is_sender(self):
 
         self.login(self.sender, "1234")
 
         message = dict(
-            receiver=self.receiver,
+            receiver=self.sender,
             date='2020-10-26T01:01',
             text='Test message')
 
@@ -283,5 +285,81 @@ class TestApp(TestBase):
 
         reply = self.app.get('/mailbox/received')
         self.assertIn(b'group message', reply.data)
+
+        self.logout()
+
+    def test_zwithdraw_message(self):
+
+        from monolith.app import app
+
+        user = "igp@gmail.com"
+        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.login(user, "1234")
+        with app.app_context():
+            db.session.query(User).filter(User.email == user).update({"points": 20})
+            db.session.commit()
+
+        date = datetime.datetime.now() + datetime.timedelta(minutes=360)
+        with app.app_context():
+            db.session.query(User).filter(User.email == user).update({"points": 20})
+            print(db.session.query(User).filter(User.email == user).first().points)
+            db.session.commit()
+
+        message = dict(
+            receiver=self.receiver,
+            date=date,
+            text='message withdraw')
+
+        reply = self.app.post("/message/send",
+                              data=message)
+
+        reply = self.app.get("/mailbox/sent")
+        self.assertIn(b'message withdraw', reply.data)
+
+        id = 0
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.post("/message/withdraw/" + str(id), follow_redirects=True)
+
+        self.assertIn(b"No messages sent !", reply.data)
+        self.logout()
+
+    def test_zzdelete_message(self):
+
+        from monolith.app import app
+
+        user = "igp@gmail.com"
+        with app.app_context():
+            id = db.session.query(User).filter(User.email == user).first()
+
+        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.login(user, "1234")
+        date = datetime.datetime.now()
+
+        message = dict(
+            receiver=self.receiver,
+            date='2020-10-26t01:01',
+            text='message delete')
+
+        reply = self.app.post("/message/send",
+                              data=message)
+
+        self.logout()
+        self.login(self.receiver, "1234")
+        id = 0
+
+        reply = self.app.get("/mailbox/received")
+        self.assertIn(b"message delete", reply.data)
+
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.post("/message/" + str(id) + "/delete", follow_redirects=True)
+
+        self.assertNotIn(b"message delete", reply.data)
+        with app.app_context():
+            db.session.query(Message).filter(Message.id == id).delete()
+            db.session.commit()
 
         self.logout()

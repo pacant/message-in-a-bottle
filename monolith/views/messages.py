@@ -18,6 +18,7 @@ messages = Blueprint('messages', __name__)
 @login_required
 def send_draft(id_message):
     if request.method == 'POST':
+
         send_message_async(request.form)
         db.session.query(Message).filter(Message.id == id_message).delete()
         db.session.commit()
@@ -35,6 +36,7 @@ def send_draft(id_message):
 @login_required
 def send_message():
     if request.method == 'POST':
+
         emails = request.form.get('receiver').split(',')
 
         for email in emails:
@@ -150,7 +152,7 @@ def send_message_async(data):
     result = db.session.query(Blacklist).filter(
         Blacklist.id_user == recipient[0].id).filter(
             Blacklist.id_blacklisted == current_user.id).all()
-    date = parser.parse(data['date'] + '+0200')
+    date = parser.parse(data['date'] + '+0100')
     id_message = save_message(data)
 
     if not result:
@@ -168,8 +170,9 @@ def save_message(data):
     message.id_receiver = id_receiver
     message.id_sender = current_user.id
     message.draft = True if 'draft' in data else False
-    message.date_delivery = parser.parse(data['date'] + '+0200')
+    message.date_delivery = parser.parse(data['date'] + '+0100')
     message.date_send = datetime.now()
+    message.deleted = False
     db.session.add(message)
     db.session.commit()
 
@@ -225,7 +228,7 @@ def notify_msg_reading(message):
         print("ERROR: " + str(e))
 
 
-@ messages.route("/message/withdraw/<id>")
+@ messages.route("/message/withdraw/<id>", methods=['POST'])
 @ login_required
 def withdraw_message(id):
     message_query = db.session.query(Message, User).filter(
@@ -244,6 +247,23 @@ def withdraw_message(id):
         db.session.query(Message).filter(Message.id == int(id)).delete()
         db.session.commit()
         return redirect('/mailbox/sent')
+
+
+@ messages.route('/message/<message_id>/delete', methods=["POST"])
+@login_required
+def deleteMessage(message_id):
+    message = db.session.query(Message, User).filter(
+        Message.id == int(message_id)
+    ).join(User, Message.id_sender == User.id).first()
+
+    if message is None or (int(message.Message.id_receiver) == current_user.id and not message.Message.delivered):
+        abort(404)
+    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
+        abort(403)
+    else:
+        db.session.query(Message).filter(Message.id == int(message_id)).update({"deleted": True})
+        db.session.commit()
+        return redirect('/mailbox/received')
 
 
 @ messages.route("/calendar/sent")
