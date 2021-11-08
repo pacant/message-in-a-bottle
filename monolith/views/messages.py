@@ -40,7 +40,8 @@ def send_message():
         emails = request.form.get('receiver').split(',')
 
         for email in emails:
-            if db.session.query(User).filter(User.email == email, User.is_active.is_(True), User.email != current_user.email).first() is None:
+            if db.session.query(User).filter(User.email == email,
+                                             User.is_active.is_(True), User.email != current_user.email).first() is None:
                 abort(400)
 
         for email in emails:

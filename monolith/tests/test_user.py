@@ -8,11 +8,11 @@ from monolith.lottery import increase_trials
 class TestApp(TestBase):
     def test_login(self):
         reply = self.app.post("/login",
-                    data=dict(
-                        email="email",
-                        pasword="password"
-                    ),
-                    follow_redirects=True)
+                              data=dict(
+                                  email="email",
+                                  pasword="password"
+                              ),
+                              follow_redirects=True)
         self.assertEqual(reply.status, '400 BAD REQUEST')
 
     def test_user_list(self):
@@ -38,7 +38,7 @@ class TestApp(TestBase):
                                   firstname='Prova',
                                   lastname='Prova',
                                   password='1234',
-                                  dateofbirth='01/01/2001'
+                                  date_of_birth='01/01/2001'
                               ),
                               follow_redirects=True)
         self.assertIn(b'Email already in use', reply.data)
@@ -49,7 +49,7 @@ class TestApp(TestBase):
                                   firstname='Prova',
                                   lastname='Prova',
                                   pass_word='1234',
-                                  dateofbirth='012001'
+                                  date_of_birth='012001'
                               ),
                               follow_redirects=True)
         self.assertEqual(reply.status, '400 BAD REQUEST')
@@ -78,15 +78,14 @@ class TestApp(TestBase):
 
         self.logout()
 
-
     def test_message_view_content_filter(self):
         self.login(self.sender, "1234")
 
-        msg_date=(datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        msg_date = (datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
         message = dict(
             receiver=self.receiver,
             date=msg_date,
-            text='test_message_view_content_filter_'+msg_date+' merda')
+            text='test_message_view_content_filter_' + msg_date + ' merda')
 
         reply = self.app.post("/message/send",
                               data=message,
@@ -124,7 +123,6 @@ class TestApp(TestBase):
         self.assertIn(b'merda', reply.data)
 
         self.logout()
-
 
     def test_user_info(self):
         self.login(self.sender, "1234")
@@ -204,8 +202,7 @@ class TestApp(TestBase):
                                   firstname='Prova',
                                   lastname='Prova',
                                   password='1234',
-                                  dateofbirth='01/01/2001'
+                                  date_of_birth='01/01/2001'
                               ),
                               follow_redirects=True)
         self.assertIn(b'You have been suspended!', reply.data)
-

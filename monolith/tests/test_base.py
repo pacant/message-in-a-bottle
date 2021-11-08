@@ -13,7 +13,6 @@ class TestBase(unittest.TestCase):
         with tested_app.app_context():
             id = db.session.query(ContentFilter).filter(ContentFilter.name == 'Default').first().id
             self.assertEqual(int(id), 1)
-        
 
     sender = "prova@gmail.com"
     receiver = "prova1@gmail.com"
@@ -26,7 +25,7 @@ class TestBase(unittest.TestCase):
                                  firstname=firstname,
                                  lastname=lastname,
                                  password=password,
-                                 dateofbirth=dateofbirdth
+                                 date_of_birth=dateofbirdth
                              ),
                              follow_redirects=True)
 
@@ -50,7 +49,7 @@ class TestBase(unittest.TestCase):
                  firstname="Prova",
                  lastname="Prova",
                  password="1234",
-                 dateofbirth="01/01/2001"
+                 date_of_birth="01/01/2001"
              ),
              follow_redirects=True)
 
@@ -60,7 +59,7 @@ class TestBase(unittest.TestCase):
                  firstname="Prova",
                  lastname="Prova",
                  password="1234",
-                 dateofbirth="01/01/2001"
+                 date_of_birth="01/01/2001"
              ),
              follow_redirects=True)
 
@@ -70,6 +69,6 @@ class TestBase(unittest.TestCase):
                  firstname="Prova",
                  lastname="Prova",
                  password="1234",
-                 dateofbirth="01/01/2001"
+                 date_of_birth="01/01/2001"
              ),
              follow_redirects=True)
