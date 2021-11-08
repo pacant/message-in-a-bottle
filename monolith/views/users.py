@@ -58,16 +58,16 @@ def create_user():
         return render_template('create_user.html', form=form)
 
 
-@users.route('/delete_user')
-@login_required
+@ users.route('/delete_user')
+@ login_required
 def delete_user():
     User.query.filter_by(id=current_user.id).update({"is_active": False})
     db.session.commit()
     return redirect('/')
 
 
-@users.route('/userinfo', methods=["GET", "POST"])
-@login_required
+@ users.route('/userinfo', methods=["GET", "POST"])
+@ login_required
 def get_user_info():
     if request.method == "GET":
         user = db.session.query(User).filter(current_user.id == User.id).first()
@@ -165,22 +165,23 @@ def add_user_to_blacklist():
         return redirect('/blacklist')
     else:
         blacklist = db.session.query(User.id).join(Blacklist, Blacklist.id_blacklisted == User.id).filter(
-            Blacklist.id_user == current_user.id)
+            Blacklist.id_user == current_user.id).filter(User.is_active.is_(True))
         users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(blacklist))
         return render_template('add_to_blacklist.html', users=users)
 
 
-@users.route('/blacklist', methods=['GET'])
-@login_required
+@ users.route('/blacklist', methods=['GET'])
+@ login_required
 def get_blacklist():
     blacklist = db.session.query(Blacklist, User).filter(
         Blacklist.id_blacklisted == User.id).filter(
-            Blacklist.id_user == current_user.id).all()
+            Blacklist.id_user == current_user.id).filter(
+        User.is_active.is_(True)).filter().all()
     return render_template('blacklist.html', blacklist=blacklist)
 
 
-@users.route('/blacklist/remove', methods=['GET', 'POST'])
-@login_required
+@ users.route('/blacklist/remove', methods=['GET', 'POST'])
+@ login_required
 def remove_user_from_blacklist():
     if request.method == 'POST':
         email = request.form["email"]
@@ -188,15 +189,10 @@ def remove_user_from_blacklist():
         db.session.query(Blacklist).filter(Blacklist.id_blacklisted == id_blklst[0].id).delete()
         db.session.commit()
         return redirect('/blacklist')
-    else:
-        blacklist = db.session.query(Blacklist, User).filter(
-            Blacklist.id_blacklisted == User.id).filter(
-                Blacklist.id_user == current_user.id).all()
-        return render_template('blacklist.html', blacklist=blacklist)
 
 
-@users.route('/report', methods=['GET'])
-@login_required
+@ users.route('/report', methods=['GET'])
+@ login_required
 def get_report():
     report = db.session.query(Reports, User).filter(
         Reports.id_reported == User.id).filter(
@@ -204,8 +200,8 @@ def get_report():
     return render_template('report.html', report=report)
 
 
-@users.route('/report/add', methods=['GET', 'POST'])
-@login_required
+@ users.route('/report/add', methods=['GET', 'POST'])
+@ login_required
 def report_user():
     if request.method == 'POST':
         report = Reports()
@@ -227,19 +223,20 @@ def report_user():
         report = db.session.query(User.id).join(Reports, Reports.id_reported == User.id).filter(
             Reports.id_user == current_user.id)
         users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(report)).filter(
-            User.is_reported.is_(False))
+            User.is_reported.is_(False)).filter(
+            User.is_active.is_(True))
         return render_template('report_user.html', users=users)
 
 
-@users.route('/lottery')
-@login_required
+@ users.route('/lottery')
+@ login_required
 def lottery_info():
     user = db.session.query(User).filter(current_user.id == User.id).first()
     return render_template("lottery.html", trials=user.trials, points=user.points)
 
 
-@users.route('/spin', methods=['GET', 'POST'])
-@login_required
+@ users.route('/spin', methods=['GET', 'POST'])
+@ login_required
 def spin_roulette():
     user = db.session.query(User).filter(current_user.id == User.id).first()
     if user.trials > 0:
