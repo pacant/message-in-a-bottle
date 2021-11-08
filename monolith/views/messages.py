@@ -146,7 +146,7 @@ def viewMessage(message_id):
 
 
 def send_message_async(data):
-    email = data['receiver'].strip('\', \[, \]')
+    email = data['receiver'].strip('\', [, ]')
     recipient = db.session.query(User).filter(User.email == email).all()
     result = db.session.query(Blacklist).filter(
         Blacklist.id_user == recipient[0].id).filter(
@@ -165,7 +165,7 @@ def save_message(data):
     message = Message()
     message.text = data['text']
     id_receiver = db.session.query(User).filter(
-        User.email == data['receiver'].strip('\', \[, \]')).first().id
+        User.email == data['receiver'].strip('\', [, ]')).first().id
     message.id_receiver = id_receiver
     message.id_sender = current_user.id
     message.draft = True if 'draft' in data else False
