@@ -46,11 +46,8 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '200 OK')
         self.assertIn(b"Message sent correctly!", reply.data)
 
-        # User.query.filter_by(email="prova_001@example.it").delete()
-
         self.logout()
 
-    @pytest.mark.skip(reason="no way of currently testing this")
     def test_message_send_recipient_not_exists(self):
 
         self.login(self.sender, "1234")
@@ -63,10 +60,9 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
-        self.assertEqual(reply.status, '400 Bad Request')
+        self.assertEqual(reply.status, '400 BAD REQUEST')
         self.logout()
 
-    @pytest.mark.skip(reason="no way of currently testing this")
     def test_message_send_recipient_is_sender(self):
 
         self.login(self.sender, "1234")
@@ -79,7 +75,7 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
-        self.assertEqual(reply.status, '400 Bad Request')
+        self.assertEqual(reply.status, '400 BAD REQUEST')
 
         self.logout()
 
