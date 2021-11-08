@@ -36,7 +36,6 @@ def send_draft(id_message):
 def send_message():
     if request.method == 'POST':
         emails = request.form.get('receiver').split(',')
-        print(emails)
 
         for email in emails:
             new_form = dict(
@@ -50,7 +49,6 @@ def send_message():
     else:
         # landing from the recipients page, we want to populate the field with the chosen one
         recipient_message = request.args.items(multi=True)
-        print(recipient_message)
         rec_list = []
 
         for item in recipient_message:
@@ -73,7 +71,7 @@ def send_message():
 
 
 @ messages.route('/draft', methods=['POST'])
-@login_required
+@ login_required
 def draft():
     data = request.form
     save_message(data)
@@ -81,7 +79,7 @@ def draft():
 
 
 @ messages.route('/message/send/forward/<id_message>', methods=['POST'])
-@login_required
+@ login_required
 def send_forward_msg(id_message):
     recipient_message = request.form['recipient']
     text = db.session.query(Message).filter(Message.id == id_message).first().text
@@ -90,7 +88,7 @@ def send_forward_msg(id_message):
 
 
 @ messages.route("/message/recipients", methods=["GET"])
-@login_required
+@ login_required
 def chooseRecipient():
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email).filter(
@@ -101,7 +99,7 @@ def chooseRecipient():
 
 
 @ messages.route('/message/recipients/<id_message>', methods=['GET'])
-@login_required
+@ login_required
 def choose_recipient_msg(id_message):
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email)
@@ -109,8 +107,8 @@ def choose_recipient_msg(id_message):
     return render_template("recipients.html", form=form)
 
 
-@messages.route('/message/<message_id>')
-@login_required
+@ messages.route('/message/<message_id>')
+@ login_required
 def viewMessage(message_id):
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
@@ -226,8 +224,8 @@ def notify_msg_reading(message):
         print("ERROR: " + str(e))
 
 
-@messages.route("/message/withdraw/<id>")
-@login_required
+@ messages.route("/message/withdraw/<id>")
+@ login_required
 def withdraw_message(id):
     message_query = db.session.query(Message, User).filter(
         Message.id == int(id)
@@ -247,8 +245,8 @@ def withdraw_message(id):
         return redirect('/mailbox/sent')
 
 
-@messages.route("/calendar/sent")
-@login_required
+@ messages.route("/calendar/sent")
+@ login_required
 def calendar_sent():
     msgs_rcv = db.session.query(Message, User).filter(
         Message.id_sender == User.id).filter(

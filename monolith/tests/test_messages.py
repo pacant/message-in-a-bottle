@@ -65,7 +65,6 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '400 Bad Request')
         self.logout()
 
-
     def test_message_send_recipient_is_sender(self):
 
         self.login(self.sender, "1234")
@@ -82,15 +81,14 @@ class TestApp(TestBase):
 
         self.logout()
 
-
     def test_message_view(self):
         self.login(self.sender, "1234")
 
-        msg_date=(datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        msg_date = (datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
         message = dict(
             receiver=self.receiver,
             date=msg_date,
-            text='test_message_view_'+msg_date)
+            text='test_message_view_' + msg_date)
 
         reply = self.app.post("/message/send",
                               data=message,
@@ -117,11 +115,11 @@ class TestApp(TestBase):
     def test_message_view_not_delivered(self):
         self.login(self.sender, "1234")
 
-        msg_date=(datetime.datetime.now()+datetime.timedelta(days=1)).isoformat()
+        msg_date = (datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()
         message = dict(
             receiver=self.receiver,
             date=msg_date,
-            text='test_message_view_not_delivered_'+msg_date)
+            text='test_message_view_not_delivered_' + msg_date)
 
         reply = self.app.post("/message/send",
                               data=message,
@@ -144,16 +142,15 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '404 NOT FOUND')
 
         self.logout()
-    
 
     def test_message_view_unauthorized(self):
         self.login(self.sender, "1234")
 
-        msg_date=(datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
+        msg_date = (datetime.datetime.now() - datetime.timedelta(days=10)).isoformat()
         message = dict(
             receiver=self.receiver,
             date=msg_date,
-            text='test_message_view_unauthorized_'+msg_date)
+            text='test_message_view_unauthorized_' + msg_date)
 
         reply = self.app.post("/message/send",
                               data=message,
@@ -176,7 +173,6 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '403 FORBIDDEN')
 
         self.logout()
-    
 
     def test_message_view_not_found(self):
         self.login(self.sender, '1234')
@@ -185,7 +181,6 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '404 NOT FOUND')
 
         self.logout()
-
 
     def test_recipients(self):
 
@@ -213,7 +208,7 @@ class TestApp(TestBase):
                                   data=message, follow_redirects=True)
             reply = self.app.get('/mailbox/sent')
             self.assertIn(b"test_send_image", reply.data)
-        
+
             self.logout()
 
             id = 0
@@ -248,14 +243,45 @@ class TestApp(TestBase):
         reply = self.app.get('/mailbox/received')
         self.assertIn(b'message forward', reply.data)
 
-        reply = self.app.get('message/recipients/5')
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.get('message/recipients/' + str(id))
         self.assertIn(b'Search recipient', reply.data)
 
         message = dict(
             recipient=self.receiver
         )
 
-        reply = self.app.post('message/send/forward/5', data=message)
+        reply = self.app.post('message/send/forward/' + str(id), data=message)
         self.assertIn(b'message forward', reply.data)
+
+        self.logout()
+
+    def test_group_message(self):
+        self.login(self.sender, '1234')
+
+        message = dict(
+            receiver=self.receiver + ', ' + self.other,
+            date='2020-10-26t01:01',
+            text='group message',
+        )
+
+        reply = self.app.post("/message/send", data=message, follow_redirects=True)
+        self.logout()
+
+        self.login(self.receiver, '1234')
+
+        reply = self.app.get('/mailbox/received')
+        self.assertIn(b'group message', reply.data)
+
+        self.logout()
+
+        self.login(self.other, '1234')
+
+        reply = self.app.get('/mailbox/received')
+        self.assertIn(b'group message', reply.data)
 
         self.logout()
