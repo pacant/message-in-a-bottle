@@ -55,6 +55,7 @@ def send_message():
             item = item[1].strip('\'')
             rec_list.append(item)
 
+        rec_list[:] = [x for x in rec_list if x]
         rec_list = list(dict.fromkeys(rec_list))
 
         recipients = ''

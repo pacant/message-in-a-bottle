@@ -28,9 +28,10 @@
       list-style-type: none;
       padding: 0;
       margin: 0;
+      text-align: center;
     }
 
-    #myUL button:hover {
+    #myUL li:hover {
       background-color: #eee;
       /* Add a hover effect to all links, except for headers */
     }
@@ -49,14 +50,17 @@
         {% endif %}
         <ul id="myUL">
           {% for rec in form['recipients'] : %}
-          <li>
-            <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
-              <input type="checkbox" name="recipient" value="{{rec.email}}">
-              {{rec.email}}
-            </button>
+          <li class="list-group-item link-button w-50 rounded">
+            <input type="checkbox" name="recipient" value="{{rec.email}}">
+            {{rec.email}}
           </li>
           {% endfor %}
         </ul>
+        <br>
+        <div class="col text-center">
+          <button type="submit" name="recipient" class="btn" style="background-color: forestgreen;">Message
+            Form</button>
+        </div>
       </form>
   </div>
 </body>
