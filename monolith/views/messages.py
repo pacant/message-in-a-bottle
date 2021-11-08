@@ -101,7 +101,9 @@ def chooseRecipient():
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email).filter(
         User.is_admin.is_(False)).filter(
-            User.is_reported.is_(False))
+            User.is_reported.is_(False)).filter(
+                User.is_active.is_(True)
+    )
     form = dict(recipients=recipients)
     return render_template("recipients.html", form=form)
 
