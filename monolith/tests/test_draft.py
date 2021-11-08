@@ -26,7 +26,7 @@ class TestApp(TestBase):
                          data=message, follow_redirects = True)
         self.assertIn(b"Testmessage", reply.data)
 
-        reply = self.app.get("/message/send/" + str(1), follow_redirects=True)
+        reply = self.app.get("/message/send/" + str(2), follow_redirects=True)
         self.assertIn(b"Testmessage1", reply.data)
-        reply = self.app.post("/message/send/" + str(1), data=message)
+        reply = self.app.post("/message/send/" + str(2), data=message)
         self.logout()

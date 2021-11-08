@@ -209,12 +209,3 @@ class TestApp(TestBase):
                               follow_redirects=True)
         self.assertIn(b'You have been suspended!', reply.data)
 
-    def test_increase(self):
-        self.login(self.sender, "1234")
-        self.app.get("/lottery")
-        increase_trials.apply()
-        reply = self.app.post("/spin")
-        self.assertIn(b"YOU WON",reply.data)
-        reply = self.app.post("/spin")
-        self.assertNotIn(b"YOU WON",reply.data)
-        self.logout()
