@@ -17,18 +17,9 @@ messages = Blueprint('messages', __name__)
 @login_required
 def send_draft(id_message):
     if request.method == 'POST':
-        emails = request.form.get('receiver').split(';')
-
-        for email in emails:
-            new_form = dict(
-                receiver=email,
-                date=request.form.get('date'),
-                text=request.form.get('text')
-            )
-            send_message_async(new_form)
-            db.session.query(Message).filter(Message.id == id_message).delete()
-            db.session.commit()
-
+        send_message_async(request.form)
+        db.session.query(Message).filter(Message.id == id_message).delete()
+        db.session.commit()
         return render_template("send_message.html", form=dict(), message_ok=True)
     else:
         message = db.session.query(Message).filter(Message.id == id_message).first()
@@ -66,8 +57,17 @@ def send_message():
             rec_list.append(item)
 
         rec_list = list(dict.fromkeys(rec_list))
-        recipient = rec_list
-        form = dict(recipient=recipient)
+
+        recipients = ''
+
+        for i in range(len(rec_list)):
+            if i == (len(rec_list) - 1):
+                recipients = recipients + rec_list[i]
+            else:
+                recipients = recipients + rec_list[i] + ', '
+
+        form = dict(recipient=recipients)
+
         return render_template("send_message.html", form=form)
 
 
@@ -160,7 +160,6 @@ def viewMessage(message_id):
 
 def send_message_async(data):
     email = data['receiver'].strip('\', \[, \]')
-    print('Email:' + email)
     recipient = db.session.query(User).filter(User.email == email).all()
     result = db.session.query(Blacklist).filter(
         Blacklist.id_user == recipient[0].id).filter(
