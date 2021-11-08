@@ -86,7 +86,7 @@ def draft():
     return redirect('/mailbox/draft')
 
 
-@ messages.route('/message/send/forward/<id_message>', methods=['POST'])
+@ messages.route('/message/forward/<id_message>', methods=['POST'])
 @ login_required
 def send_forward_msg(id_message):
     recipient_message = request.form['recipient']

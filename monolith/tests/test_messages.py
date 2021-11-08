@@ -253,7 +253,7 @@ class TestApp(TestBase):
             recipient=self.receiver
         )
 
-        reply = self.app.post('message/send/forward/' + str(id), data=message)
+        reply = self.app.post('message/forward/' + str(id), data=message)
         self.assertIn(b'message forward', reply.data)
 
         self.logout()
