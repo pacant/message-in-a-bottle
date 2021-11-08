@@ -1,4 +1,5 @@
 <html>
+
 <head>
   <title>Send a message</title>
   <meta charset="utf-8">
@@ -39,7 +40,7 @@
           {% if reply %}
           <input value='{{reply}}' name="receiver" id="receiver" />
           {% else %}
-          <input value='{{form["recipient"]}}' name="receiver" placeholder="Enter email" id="receiver" />
+          <input value='{{form["recipient"]}}' name="receiver" placeholder="Enter email" id="receiver" size="50" />
           {% endif %}
         </div>
 
@@ -68,7 +69,6 @@
 
       </form>
   </div>
-
 </body>
 
 </html>

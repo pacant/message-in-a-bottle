@@ -1,4 +1,5 @@
 <html>
+
 <head>
   <title>Recipients</title>
   <meta charset="utf-8">
@@ -50,6 +51,7 @@
           {% for rec in form['recipients'] : %}
           <li>
             <button type="submit" name="recipient" value={{rec.email}} class="list-group-item link-button w-50 rounded">
+              <input type="checkbox" name="recipient" value="{{rec.email}}">
               {{rec.email}}
             </button>
           </li>
