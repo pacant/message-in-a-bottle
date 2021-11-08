@@ -29,8 +29,8 @@ def see_received_messages():
     return render_template('msgs_rcv.html', msgs_rcv=msgs_rcv)
 
 
-@login_required
 @mailbox.route('/mailbox/draft', methods=['GET'])
+@login_required
 def see_draft_messages():
     draft_msgs = db.session.query(Message, User).filter(Message.id_receiver == User.id).filter(
         Message.id_sender == current_user.id).filter(Message.draft).all()

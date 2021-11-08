@@ -31,8 +31,8 @@ def send_draft(id_message):
         return render_template("send_message.html", form=form)
 
 
-@login_required
 @ messages.route('/message/send', methods=['GET', 'POST'])
+@login_required
 def send_message():
     if request.method == 'POST':
         emails = request.form.get('receiver').split(',')
@@ -72,8 +72,8 @@ def send_message():
         return render_template("send_message.html", form=form)
 
 
-@login_required
 @ messages.route('/draft', methods=['POST'])
+@login_required
 def draft():
     data = request.form
     save_message(data)
@@ -81,6 +81,7 @@ def draft():
 
 
 @ messages.route('/message/send/forward/<id_message>', methods=['POST'])
+@login_required
 def send_forward_msg(id_message):
     recipient_message = request.form['recipient']
     text = db.session.query(Message).filter(Message.id == id_message).first().text
@@ -88,8 +89,8 @@ def send_forward_msg(id_message):
     return render_template("send_message.html", form=form, forward=True)
 
 
-@login_required
 @ messages.route("/message/recipients", methods=["GET"])
+@login_required
 def chooseRecipient():
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email).filter(
@@ -99,8 +100,8 @@ def chooseRecipient():
     return render_template("recipients.html", form=form)
 
 
-@login_required
 @ messages.route('/message/recipients/<id_message>', methods=['GET'])
+@login_required
 def choose_recipient_msg(id_message):
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email)
@@ -219,12 +220,14 @@ def notify_msg_reading(message):
                             current_user.firstname +
                             ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
         mailserver.quit()
-    except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError) as e:
+    except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError, smtplib.SMTPConnectError,
+            smtplib.SMTPNotSupportedError, smtplib.SMTPSenderRefused, smtplib.SMTPServerDisconnected,
+            smtplib.SMTPHeloError) as e:
         print("ERROR: " + str(e))
 
 
-@login_required
 @messages.route("/message/withdraw/<id>")
+@login_required
 def withdraw_message(id):
     message_query = db.session.query(Message, User).filter(
         Message.id == int(id)
@@ -244,11 +247,11 @@ def withdraw_message(id):
         return redirect('/mailbox/sent')
 
 
-@login_required
 @messages.route("/calendar/sent")
+@login_required
 def calendar_sent():
     msgs_rcv = db.session.query(Message, User).filter(
         Message.id_sender == User.id).filter(
             Message.id_receiver == current_user.id).filter(Message.delivered).all()
 
-    return render_template("calendar.html", msgs_rcv = msgs_rcv)
+    return render_template("calendar.html", msgs_rcv=msgs_rcv)
