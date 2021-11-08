@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, request, redirect, abort
 from flask_login.utils import login_required
 from monolith.database import ContentFilter, UserContentFilter, Attachments, Message, User, Blacklist, db
@@ -139,7 +140,7 @@ def save_message(data):
     message.id_sender = current_user.id
     message.draft = True if 'draft' in data else False
     message.date_delivery = parser.parse(data['date'] + '+0200')
-
+    message.date_send = datetime.now()
     db.session.add(message)
     db.session.commit()
 
@@ -212,3 +213,13 @@ def withdraw_message(id):
         db.session.query(Message).filter(Message.id == int(id)).delete()
         db.session.commit()
         return redirect('/mailbox/sent')
+
+
+@login_required
+@messages.route("/calendar/sent")
+def calendar_sent():
+    msgs_rcv = db.session.query(Message, User).filter(
+        Message.id_sender == User.id).filter(
+            Message.id_receiver == current_user.id).filter(Message.delivered).all()
+
+    return render_template("calendar.html", msgs_rcv = msgs_rcv)

@@ -54,6 +54,7 @@ class Message(db.Model):
     delivered = db.Column(db.Boolean, default=False)
     read = db.Column(db.Boolean, default=False)
     date_delivery = db.Column(db.DateTime(timezone=True))
+    date_send = db.Column(db.DateTime(timezone=True))
 
     def __init__(self, *args, **kw):
         super(Message, self).__init__(*args, **kw)
