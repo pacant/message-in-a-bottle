@@ -58,10 +58,14 @@
 
 
         <button type="Submit" value="submit" class="btn" style="background-color: 92C991">Send</button>
-        <input type="file" id="files" name="files" multiple><br><br>
+        <input type="file" id="files" name="files" multiple>
+        {% if "message_id" in form%}
         <a href="/message/recipients/{{form['message_id']}}" class="btn"
           style="background-color: #E5BE6B;margin-bottom: 1.5px;float: right; ">Choose recipient</a>
-
+        {% else %}
+        <a href="/message/recipients" class="btn"
+          style="background-color: #E5BE6B;margin-bottom: 1.5px;float: right; ">Choose recipient</a>
+        {% endif %}
         <button type="Submit" name="draft" formaction="/draft" class="btn"
           style="background-color: 175D7E; margin-bottom: 1.5px; color: aliceblue; float:right;margin-right: 5px;">
           Draft
