@@ -228,28 +228,10 @@
             </thead>
             <tbody>
               <tr>
-                <th class="timetitle" >All Day</th>
+                <th class="timetitle" >Messages</th>
                 <td class="{{: date.toDateCssClass() }}">  </td>
               </tr>
-              <tr>
-                <th class="timetitle" >Before 6 AM</th>
-                <td class="time-0-0"> </td>
-              </tr>
-              {{for (i = 6; i < 22; i++) { }}
-              <tr>
-                <th class="timetitle" >{{: i <= 12 ? i : i - 12 }} {{: i < 12 ? "AM" : "PM"}}</th>
-                <td class="time-{{: i}}-0"> </td>
-              </tr>
-              <tr>
-                <th class="timetitle" >{{: i <= 12 ? i : i - 12 }}:30 {{: i < 12 ? "AM" : "PM"}}</th>
-                <td class="time-{{: i}}-30"> </td>
-              </tr>
-              {{ } }}
-              <tr>
-                <th class="timetitle" >After 10 PM</th>
-                <td class="time-22-0"> </td>
-              </tr>
-            </tbody>
+                          </tbody>
           </table>
         </td>
       </tr>
@@ -257,7 +239,6 @@
     {{ } }}
   </table>
 </script>
-
 
 <script>
   var $currentPopover = null;

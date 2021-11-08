@@ -181,7 +181,7 @@ def get_blacklist():
     return render_template('blacklist.html', blacklist=blacklist)
 
 
-@ users.route('/blacklist/remove', methods=['GET', 'POST'])
+@ users.route('/blacklist/remove', methods=['POST'])
 @ login_required
 def remove_user_from_blacklist():
     if request.method == 'POST':
