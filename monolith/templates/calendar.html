@@ -607,7 +607,7 @@
     ];
   data =[];
   {% for i in msgs_rcv %}
-    data.push({ title: 'message from tonio cartonio', start: new Date("{{i[0].date_send}}"), end: new Date("{{i[0].date_send}}"), allDay: 1});
+    data.push({ title: 'message to'+" {{i[1].email}}", start: new Date("{{i[0].date_send}}"), end: new Date("{{i[0].date_send}}"), allDay: 1});
     {% endfor %}
 
   data.sort(function (a, b) {
