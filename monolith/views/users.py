@@ -159,7 +159,7 @@ def add_user_to_blacklist():
         blacklist = Blacklist()
         blacklist.id_user = current_user.id
         email = request.form.get('email')
-        blacklist.id_blacklisted = db.session.query(User.id).filter(User.email == email)
+        blacklist.id_blacklisted = db.session.query(User).filter(User.email == email).first().id
         db.session.add(blacklist)
         db.session.commit()
         return redirect('/blacklist')
@@ -211,17 +211,15 @@ def report_user():
         report = Reports()
         report.id_user = current_user.id
         email = request.form.get('email')
-        report.id_reported = db.session.query(User.id).filter(User.email == email)
+        report.id_reported = db.session.query(User).filter(User.email == email).first().id
         db.session.add(report)
         db.session.commit()
 
         num_reports = db.session.query(Reports).filter(Reports.id_reported == report.id_reported).all()
-        print(len(num_reports))
         if len(num_reports) == NUM_REPORTS:
-            print('dentro if')
-            user = db.session.query(Reports, User).filter(report.id_reported == User.id).first()
-            print(user)
-            user.User.is_reported = True
+            user = db.session.query(User).join(Reports, report.id_reported == User.id).filter(
+                report.id_reported == User.id).first()
+            user.is_reported = True
             db.session.commit()
 
         return redirect('/report')
