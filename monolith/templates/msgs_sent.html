@@ -39,7 +39,9 @@
                                     <td> <a href="/message/{{i[0].id}}">{{ i[0].text }}</a></td>
                                     <td>{{ i[1].email }}</td>
                                     {% if not i[0].delivered and current_user.points > 10%}
-                                    <td><input class="btn btn-primary" formaction = "/message/withdraw/{{i[0].id}}" type="submit" value="Withdraw"></td>
+                                    <td><input class="btn" style="background-color: #E5BE6B;" formaction = "/message/withdraw/{{i[0].id}}" type="submit" value="Withdraw"></td>
+                                    {% else %}
+                                    <td></td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
