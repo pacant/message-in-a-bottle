@@ -165,8 +165,9 @@ def add_user_to_blacklist():
         return redirect('/blacklist')
     else:
         blacklist = db.session.query(User.id).join(Blacklist, Blacklist.id_blacklisted == User.id).filter(
-            Blacklist.id_user == current_user.id).filter(User.is_active.is_(True))
-        users = db.session.query(User).filter(User.email != current_user.email).filter(User.id.not_in(blacklist))
+            Blacklist.id_user == current_user.id)
+        users = db.session.query(User).filter(User.email != current_user.email).filter(
+            User.id.not_in(blacklist)).filter(User.is_active.is_(True))
         return render_template('add_to_blacklist.html', users=users)
 
 
