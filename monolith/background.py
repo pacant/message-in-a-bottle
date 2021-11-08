@@ -38,8 +38,10 @@ def send_message(id_message):
                                     usr.firstname +
                                     ',\nyou just received a new message in a bottle.\n\nGreetings,\nThe MIB team')
                 mailserver.quit()
-            except smtplib.SMTPRecipientsRefused:
-                print("ERROR: SMTPRecipientsRefused (" + usr.email + ")")
+            except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError, smtplib.SMTPConnectError,
+                    smtplib.SMTPNotSupportedError, smtplib.SMTPSenderRefused, smtplib.SMTPServerDisconnected,
+                    smtplib.SMTPHeloError) as e:
+                print("ERROR: " + str(e))
     else:
         app = _APP
 
