@@ -192,7 +192,7 @@ def remove_user_from_blacklist():
         return redirect('/blacklist')
 
 
-@ users.route('/report', methods=['GET'])
+@ users.route('/report/list', methods=['GET'])
 @ login_required
 def get_report():
     report = db.session.query(Reports, User).filter(
@@ -219,7 +219,7 @@ def report_user():
             user.is_reported = True
             db.session.commit()
 
-        return redirect('/report')
+        return redirect('/report/list')
     else:
         report = db.session.query(User.id).join(Reports, Reports.id_reported == User.id).filter(
             Reports.id_user == current_user.id)

@@ -140,11 +140,11 @@ def viewMessage(message_id):
         if int(message.Message.id_sender) != current_user.id:
             message.Message.text = purify_message(message.Message.text)
 
-        images_db = db.session.query(Attachments).filter(Attachments.id == message_id).all()
+        images_db = db.session.query(Attachments).filter(Attachments.id_message == message_id).all()
         images = []
         for image in images_db:
             images.append(base64.b64encode(image.data).decode('ascii'))
-
+        print(images)
         return render_template("message.html",
                                sender=message.User,
                                recipient=recipient,
@@ -180,6 +180,7 @@ def save_message(data):
     message.date_delivery = parser.parse(data['date'] + '+0100')
     message.date_send = datetime.now()
     message.deleted = False
+
     db.session.add(message)
     db.session.commit()
 

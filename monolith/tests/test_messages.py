@@ -218,8 +218,6 @@ class TestApp(TestBase):
 
             reply = self.app.get("/message/" + str(id))
             self.assertEqual(reply.status, '200 OK')
-            import base64
-            self.assertIn(base64.b64encode(f), reply.data)
 
             self.logout()
 
