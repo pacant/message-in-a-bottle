@@ -75,7 +75,7 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
-        self.assertIn(b"Unable to send bottle to '"+self.sender.encode('utf8')+b"'", reply.data)
+        self.assertIn(b"Unable to send bottle to '" + self.sender.encode('utf8') + b"'", reply.data)
 
         self.logout()
 
@@ -251,7 +251,7 @@ class TestApp(TestBase):
             recipient=self.receiver
         )
 
-        reply = self.app.post('message/forward/' + str(id), data=message)
+        reply = self.app.get('message/forward/' + str(id), data=message)
         self.assertIn(b'message forward', reply.data)
 
         self.logout()

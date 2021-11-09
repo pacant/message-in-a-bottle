@@ -84,7 +84,7 @@ def draft():
 @ messages.route('/message/forward/<id_message>', methods=['GET'])
 @ login_required
 def send_forward_msg(id_message):
-    ''' POST:  '''
+    ''' GET:  '''
     recipient_message = request.args.items(multi=True)
     text = db.session.query(Message).filter(Message.id == id_message).first().text
     form = dict(recipient="", text=text, message_id=id_message)
