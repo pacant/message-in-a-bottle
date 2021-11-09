@@ -7,6 +7,7 @@ Click==7.0
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
+email_validator==1.1.3
 flake8==3.9.2
 flake8-flask==0.9.3
 flake8-isort==4.1.1
