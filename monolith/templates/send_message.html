@@ -29,6 +29,16 @@
       </button>
     </div>
     {%endif%}
+    {% if recipient_error_list %}
+      {% for recipient in recipient_error_list %}
+        <div class="alert alert-danger alert-dismissible fade show pt-3" role="alert">
+          Unable to send bottle to '{{ recipient }}'
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {%endif%}
 
     {% if (("message_id" in form) and (not forward == True)) %}
     <form action='/message/send/{{form["message_id"]}}' method='POST' enctype=multipart/form-data>

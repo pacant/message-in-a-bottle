@@ -20,21 +20,25 @@ def send_message():
     if request.method == 'POST':
 
         emails = request.form.get('receiver').split(',')
+        recipient_error_list = []
+        message_ok = False
 
         for email in emails:
+            email = email.strip(' ')
             if db.session.query(User).filter(User.email == email,
                                              User.is_active.is_(True), User.email != current_user.email).first() is None:
-                abort(400)
+                recipient_error_list.append(email)
+            else:
+                new_form = dict(
+                    receiver=email,
+                    date=request.form.get('date'),
+                    text=request.form.get('text')
+                )
+                send_message_async(new_form)
+                message_ok = True
 
-        for email in emails:
-            new_form = dict(
-                receiver=email,
-                date=request.form.get('date'),
-                text=request.form.get('text')
-            )
-            send_message_async(new_form)
-
-        return render_template("send_message.html", form=dict(), message_ok=True)
+        return render_template("send_message.html", form=dict(), message_ok=message_ok,
+                               recipient_error_list=recipient_error_list)
     else:
         # landing from the recipients page, we want to populate the field with the chosen one
         recipient_message = request.args.items(multi=True)

@@ -60,7 +60,7 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
-        self.assertEqual(reply.status, '400 BAD REQUEST')
+        self.assertIn(b"Unable to send bottle to 'mailnotexists@gmail.com'", reply.data)
         self.logout()
 
     def test_message_send_recipient_is_sender(self):
@@ -75,7 +75,7 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send",
                               data=message,
                               follow_redirects=True)
-        self.assertEqual(reply.status, '400 BAD REQUEST')
+        self.assertIn(b"Unable to send bottle to '"+self.sender.encode('utf8')+b"'", reply.data)
 
         self.logout()
 
