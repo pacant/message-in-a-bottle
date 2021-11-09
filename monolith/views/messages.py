@@ -84,7 +84,7 @@ def draft():
 @ messages.route('/message/forward/<id_message>', methods=['GET'])
 @ login_required
 def send_forward_msg(id_message):
-    ''' GET:  '''
+    ''' GET: get the send message page filled with the text to forward '''
     recipient_message = request.args.items(multi=True)
     text = db.session.query(Message).filter(Message.id == id_message).first().text
     form = dict(recipient="", text=text, message_id=id_message)
@@ -97,6 +97,7 @@ def send_forward_msg(id_message):
 @ messages.route("/message/recipients", methods=["GET"])
 @ login_required
 def chooseRecipient():
+    ''' GET: get the page for choosing the recipient/s for a new message '''
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email).filter(
         User.is_admin.is_(False)).filter(
@@ -110,15 +111,17 @@ def chooseRecipient():
 @ messages.route('/message/recipients/<id_message>', methods=['GET'])
 @ login_required
 def choose_recipient_msg(id_message):
+    ''' GET: get the page for choosing the recipient/s for the chosen message'''
     email = current_user.email
     recipients = db.session.query(User).filter(User.email != email)
     form = dict(recipients=recipients, id_message=id_message)
     return render_template("recipients.html", form=form)
 
 
-@ messages.route('/message/<message_id>')
+@ messages.route('/message/<message_id>', methods=["GET"])
 @ login_required
 def view_message(message_id):
+    ''' GET: visualize the chosen message '''
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
     ).join(User, Message.id_sender == User.id).first()
@@ -155,6 +158,7 @@ def view_message(message_id):
 @ messages.route("/message/withdraw/<id>", methods=['POST'])
 @ login_required
 def withdraw_message(id):
+    ''' POST: withdraw a message not sent yet, paying points '''
     message_query = db.session.query(Message, User).filter(
         Message.id == int(id)
     ).join(User, Message.id_sender == User.id)
@@ -176,6 +180,7 @@ def withdraw_message(id):
 @ messages.route('/message/<message_id>/delete', methods=["POST"])
 @login_required
 def deleteMessage(message_id):
+    ''' POST: delete the chosen message '''
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
     ).join(User, Message.id_sender == User.id).first()
@@ -191,6 +196,7 @@ def deleteMessage(message_id):
 
 
 def send_message_async(data):
+    ''' Sending a message launching a celery task'''
     email = data['receiver'].strip('\', [, ]')
     recipient = db.session.query(User).filter(User.email == email).all()
     result = db.session.query(Blacklist).filter(
@@ -206,7 +212,7 @@ def send_message_async(data):
 
 
 def save_message(data):
-
+    ''' Save the message in the DB'''
     message = Message()
     message.text = data['text']
     id_receiver = db.session.query(User).filter(
@@ -233,6 +239,7 @@ def save_message(data):
 
 
 def purify_message(msg):
+    ''' Filter the message from bad words'''
     list = db.session.query(UserContentFilter.id_content_filter).filter(
         UserContentFilter.id_user == current_user.id
     )
@@ -255,6 +262,7 @@ def purify_message(msg):
 
 
 def notify_msg_reading(message):
+    ''' Notify the sender by email when the recipient open the message'''
     message.Message.read = True
     db.session.commit()
     try:

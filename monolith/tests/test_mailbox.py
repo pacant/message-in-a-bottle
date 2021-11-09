@@ -16,9 +16,8 @@ class TestApp(TestBase):
         reply = self.app.get("/mailbox/received")
         self.assertIn(b"No messages received !", reply.data)
 
-        reply = self.app.get('/delete_user')
+        reply = self.app.post('/delete_user')
         self.assertEqual(reply.status, '302 FOUND')
-
 
     def test_empty_outbox(self):
 
@@ -30,9 +29,8 @@ class TestApp(TestBase):
         reply = self.app.get("/mailbox/sent")
         self.assertIn(b"No messages sent !", reply.data)
 
-        reply = self.app.get('/delete_user')
+        reply = self.app.post('/delete_user')
         self.assertEqual(reply.status, '302 FOUND')
-
 
     def test_empty_draft(self):
 
@@ -44,9 +42,8 @@ class TestApp(TestBase):
         reply = self.app.get("/mailbox/draft")
         self.assertIn(b"No draft messages !", reply.data)
 
-        reply = self.app.get('/delete_user')
+        reply = self.app.post('/delete_user')
         self.assertEqual(reply.status, '302 FOUND')
-
 
     def test_mailbox_sent(self):
         user = 'user@example.com'
@@ -60,14 +57,14 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '200 OK')
 
         message = dict(
-            receiver = user_receiver,
+            receiver=user_receiver,
             date='2020-11-03T01:01',
             text='Test message x')
 
         reply = self.app.post("/message/send",
-                            data=message)
+                              data=message)
         self.assertEqual(reply.status, '200 OK')
-        self.assertIn(b"Message sent correctly!",reply.data)
+        self.assertIn(b"Message sent correctly!", reply.data)
 
         reply = self.app.get("/mailbox/sent")
         self.assertIn(b'Test message x', reply.data)
@@ -75,7 +72,7 @@ class TestApp(TestBase):
         self.logout()
         self.login(user_receiver, "1234")
 
-        reply = self.app.get("/mailbox/received",follow_redirects = True)
+        reply = self.app.get("/mailbox/received", follow_redirects=True)
         self.assertIn(b'Test message x', reply.data)
 
         self.logout()
@@ -91,12 +88,12 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '405 METHOD NOT ALLOWED')
 
         message = dict(
-            receiver = self.receiver,
+            receiver=self.receiver,
             date='2020-10-26T01:01',
             text='DraftMessage')
 
         reply = self.app.post("/draft",
-                         data=message)
+                              data=message)
         self.assertEqual(reply.status, '302 FOUND')
 
         #reply = app.get('/mailbox/draft')

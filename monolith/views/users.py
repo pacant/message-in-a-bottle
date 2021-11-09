@@ -12,33 +12,26 @@ NUM_REPORTS = 2
 users = Blueprint('users', __name__)
 
 
-@users.route('/users')
+@users.route('/users', methods=["GET"])
 def _users():
+    ''' GET: get the list of all the users'''
     _users = db.session.query(User).filter(User.is_active.is_(True))
     return render_template("users.html", users=_users)
 
 
 @users.route('/create_user', methods=['POST', 'GET'])
 def create_user():
+    ''' GET: get the registration page
+        POST: register a user '''
     form = UserForm()
 
     if request.method == 'POST':
         if form.validate_on_submit():
             new_user = User()
             form.populate_obj(new_user)
-            """ Password should be hashed with some salt. For example if you choose a hash function x,
-            where x is in [md5, sha1, bcrypt], the hashed_password should be = x(password + s) where
-            s is a secret key.
-            """
+
             result = db.session.query(User).filter(User.email == new_user.email, User.is_active.is_(True)).all()
-            '''
-            reported_user = db.session.query(User).filter(
-                User.email == new_user.email,
-                User.firstname == new_user.firstname,
-                User.lastname == new_user.lastname,
-                User.date_of_birth == new_user.date_of_birth,
-                User.is_reported.is_(True)).first()
-            '''
+
             reported_user = db.session.query(User).filter(
                 User.email == new_user.email,
                 User.is_reported.is_(True)).first()
@@ -58,9 +51,10 @@ def create_user():
         return render_template('create_user.html', form=form)
 
 
-@ users.route('/delete_user')
+@ users.route('/delete_user', methods=["POST"])
 @ login_required
 def delete_user():
+    ''' POST: delete a user '''
     User.query.filter_by(id=current_user.id).update({"is_active": False})
     db.session.commit()
     return redirect('/')
@@ -69,6 +63,8 @@ def delete_user():
 @ users.route('/userinfo', methods=["GET", "POST"])
 @ login_required
 def get_user_info():
+    ''' GET: get the profile info page
+        POST: edit profile info'''
     if request.method == "GET":
         user = db.session.query(User).filter(current_user.id == User.id).first()
         return render_template('user_info.html', user=user)
@@ -91,10 +87,10 @@ def get_user_info():
         return render_template('user_info.html', user=user_dict)
 
 
-@ users.route('/userinfo/content_filter')
+@ users.route('/userinfo/content_filter', methods=["GET"])
 @ login_required
 def get_user_content_filter_list():
-
+    ''' GET: get the content filter list for the user '''
     list = db.session.query(UserContentFilter).filter(
         UserContentFilter.id_user == current_user.id
     ).all()
@@ -120,6 +116,8 @@ def get_user_content_filter_list():
 @ users.route('/userinfo/content_filter/<id_filter>', methods=['GET', 'PUT'])
 @ login_required
 def get_user_content_filter(id_filter):
+    ''' GET: get a content filter
+        PUT: toggle a content filter for the user '''
     content_filter = db.session.query(ContentFilter, UserContentFilter).filter(
         ContentFilter.id == int(id_filter)
     ).join(UserContentFilter, isouter=True).first()
@@ -155,6 +153,8 @@ def get_user_content_filter(id_filter):
 @ users.route('/blacklist/add', methods=['GET', 'POST'])
 @ login_required
 def add_user_to_blacklist():
+    ''' GET: get the list of users that the user can add to the blacklist
+        POST: add a user to the blacklist '''
     if request.method == 'POST':
         blacklist = Blacklist()
         blacklist.id_user = current_user.id
@@ -174,6 +174,7 @@ def add_user_to_blacklist():
 @ users.route('/blacklist', methods=['GET'])
 @ login_required
 def get_blacklist():
+    ''' GET: get the user blacklist'''
     blacklist = db.session.query(Blacklist, User).filter(
         Blacklist.id_blacklisted == User.id).filter(
             Blacklist.id_user == current_user.id).filter(
@@ -184,6 +185,7 @@ def get_blacklist():
 @ users.route('/blacklist/remove', methods=['POST'])
 @ login_required
 def remove_user_from_blacklist():
+    ''' POST: remove a user from the blacklist'''
     if request.method == 'POST':
         email = request.form["email"]
         id_blklst = db.session.query(User.id).filter(User.email == email).all()
@@ -195,6 +197,7 @@ def remove_user_from_blacklist():
 @ users.route('/report/list', methods=['GET'])
 @ login_required
 def get_report():
+    ''' GET: get the list of the users reported by the user'''
     report = db.session.query(Reports, User).filter(
         Reports.id_reported == User.id).filter(
             Reports.id_user == current_user.id).all()
@@ -204,6 +207,8 @@ def get_report():
 @ users.route('/report/add', methods=['GET', 'POST'])
 @ login_required
 def report_user():
+    ''' GET: get the list of the users that the user can report 
+        POST: report a user'''
     if request.method == 'POST':
         report = Reports()
         report.id_user = current_user.id
@@ -229,16 +234,18 @@ def report_user():
         return render_template('report_user.html', users=users)
 
 
-@ users.route('/lottery')
+@ users.route('/lottery', methods=["GET"])
 @ login_required
 def lottery_info():
+    ''' GET: get the lottery page'''
     user = db.session.query(User).filter(current_user.id == User.id).first()
     return render_template("lottery.html", trials=user.trials, points=user.points)
 
 
-@ users.route('/spin', methods=['GET', 'POST'])
+@ users.route('/spin', methods=['POST'])
 @ login_required
 def spin_roulette():
+    '''POST: spin the roulette for earning points'''
     user = db.session.query(User).filter(current_user.id == User.id).first()
     if user.trials > 0:
         prizes = [10, 20, 40, 80]

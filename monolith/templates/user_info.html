@@ -141,8 +141,10 @@
           <p>Are you sure?</p>
         </div>
         <div class="modal-footer">
-          <a href="/delete_user" class="btn" style="background-color: #D35E5E;">Yes</a>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <form action="/delete_user" method="POST">
+            <button type="submit" class="btn" style="background-color: #D35E5E;">Yes</a>
+          </form>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
         </div>
       </div>
     </div>
