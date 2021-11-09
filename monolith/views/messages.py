@@ -14,24 +14,6 @@ import smtplib
 messages = Blueprint('messages', __name__)
 
 
-@messages.route('/message/send/<id_message>', methods=['GET', 'POST'])
-@login_required
-def send_draft(id_message):
-    if request.method == 'POST':
-
-        send_message_async(request.form)
-        db.session.query(Message).filter(Message.id == id_message).delete()
-        db.session.commit()
-        return render_template("send_message.html", form=dict(), message_ok=True)
-    else:
-        message = db.session.query(Message).filter(Message.id == id_message).first()
-        receiver = db.session.query(User).filter(User.id == message.id_receiver).first().email
-        date = message.date_delivery.isoformat()
-        text = message.text
-        form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
-        return render_template("send_message.html", form=form)
-
-
 @ messages.route('/message/send', methods=['GET', 'POST'])
 @login_required
 def send_message():
@@ -78,6 +60,24 @@ def send_message():
         return render_template("send_message.html", form=form)
 
 
+@messages.route('/message/send/<id_message>', methods=['GET', 'POST'])
+@login_required
+def send_draft(id_message):
+    if request.method == 'POST':
+
+        send_message_async(request.form)
+        db.session.query(Message).filter(Message.id == id_message).delete()
+        db.session.commit()
+        return render_template("send_message.html", form=dict(), message_ok=True)
+    else:
+        message = db.session.query(Message).filter(Message.id == id_message).first()
+        receiver = db.session.query(User).filter(User.id == message.id_receiver).first().email
+        date = message.date_delivery.isoformat()
+        text = message.text
+        form = dict(recipient=receiver, text=text, date=date, message_id=message.id)
+        return render_template("send_message.html", form=form)
+
+
 @ messages.route('/draft', methods=['POST'])
 @ login_required
 def draft():
@@ -119,7 +119,7 @@ def choose_recipient_msg(id_message):
 
 @ messages.route('/message/<message_id>')
 @ login_required
-def viewMessage(message_id):
+def view_message(message_id):
     message = db.session.query(Message, User).filter(
         Message.id == int(message_id)
     ).join(User, Message.id_sender == User.id).first()
@@ -151,6 +151,44 @@ def viewMessage(message_id):
                                message=message.Message,
                                images=images,
                                date='-')
+
+
+@ messages.route("/message/withdraw/<id>", methods=['POST'])
+@ login_required
+def withdraw_message(id):
+    message_query = db.session.query(Message, User).filter(
+        Message.id == int(id)
+    ).join(User, Message.id_sender == User.id)
+    message = message_query.first()
+
+    if message is None or (int(message.Message.id_receiver) == current_user.id):
+        abort(404)
+    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
+        abort(403)
+    elif (message.Message.delivered is True) or (message.User.points < 10):
+        return redirect("/mailbox/sent")
+    else:
+        db.session.query(User).filter(User.id == current_user.id).update({"points": User.points - 10})
+        db.session.query(Message).filter(Message.id == int(id)).delete()
+        db.session.commit()
+        return redirect('/mailbox/sent')
+
+
+@ messages.route('/message/<message_id>/delete', methods=["POST"])
+@login_required
+def deleteMessage(message_id):
+    message = db.session.query(Message, User).filter(
+        Message.id == int(message_id)
+    ).join(User, Message.id_sender == User.id).first()
+
+    if message is None or (int(message.Message.id_receiver) == current_user.id and not message.Message.delivered):
+        abort(404)
+    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
+        abort(403)
+    else:
+        db.session.query(Message).filter(Message.id == int(message_id)).update({"deleted": True})
+        db.session.commit()
+        return redirect('/mailbox/received')
 
 
 def send_message_async(data):
@@ -234,43 +272,3 @@ def notify_msg_reading(message):
             smtplib.SMTPNotSupportedError, smtplib.SMTPSenderRefused, smtplib.SMTPServerDisconnected,
             smtplib.SMTPHeloError) as e:
         print("ERROR: " + str(e))
-
-
-@ messages.route("/message/withdraw/<id>", methods=['POST'])
-@ login_required
-def withdraw_message(id):
-    message_query = db.session.query(Message, User).filter(
-        Message.id == int(id)
-    ).join(User, Message.id_sender == User.id)
-    message = message_query.first()
-
-    if message is None or (int(message.Message.id_receiver) == current_user.id):
-        abort(404)
-    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
-        abort(403)
-    elif (message.Message.delivered is True) or (message.User.points < 10):
-        return redirect("/mailbox/sent")
-    else:
-        db.session.query(User).filter(User.id == current_user.id).update({"points": User.points - 10})
-        db.session.query(Message).filter(Message.id == int(id)).delete()
-        db.session.commit()
-        return redirect('/mailbox/sent')
-
-
-@ messages.route('/message/<message_id>/delete', methods=["POST"])
-@login_required
-def deleteMessage(message_id):
-    message = db.session.query(Message, User).filter(
-        Message.id == int(message_id)
-    ).join(User, Message.id_sender == User.id).first()
-
-    if message is None or (int(message.Message.id_receiver) == current_user.id and not message.Message.delivered):
-        abort(404)
-    elif int(message.Message.id_sender) != current_user.id and int(message.Message.id_receiver) != current_user.id:
-        abort(403)
-    else:
-        db.session.query(Message).filter(Message.id == int(message_id)).update({"deleted": True})
-        db.session.commit()
-        return redirect('/mailbox/received')
-
-
