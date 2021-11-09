@@ -17,6 +17,8 @@ messages = Blueprint('messages', __name__)
 @ messages.route('/message/send', methods=['GET', 'POST'])
 @login_required
 def send_message():
+    ''' GET: get the page for write and send a message to the chosen recipient/s
+        POST: send the message to the recipient/s at the chosen date '''
     if request.method == 'POST':
 
         emails = request.form.get('receiver').split(',')
@@ -53,6 +55,8 @@ def send_message():
 @messages.route('/message/send/<id_message>', methods=['GET', 'POST'])
 @login_required
 def send_draft(id_message):
+    ''' GET: get the message page filled with the draft message (<id_message>) info
+        POST: send the draft message and delete it from drafts '''
     if request.method == 'POST':
 
         send_message_async(request.form)
@@ -71,17 +75,22 @@ def send_draft(id_message):
 @ messages.route('/draft', methods=['POST'])
 @ login_required
 def draft():
+    ''' POST: save a message as a draft '''
     data = request.form
     save_message(data)
     return redirect('/mailbox/draft')
 
 
-@ messages.route('/message/forward/<id_message>', methods=['POST'])
+@ messages.route('/message/forward/<id_message>', methods=['GET'])
 @ login_required
 def send_forward_msg(id_message):
-    recipient_message = request.form['recipient']
+    ''' POST:  '''
+    recipient_message = request.args.items(multi=True)
     text = db.session.query(Message).filter(Message.id == id_message).first().text
-    form = dict(recipient=recipient_message, text=text, message_id=id_message)
+    form = dict(recipient="", text=text, message_id=id_message)
+    for recipient in recipient_message:
+        if recipient[1] != '':
+            form['recipient'] += recipient[1] if form['recipient'] == '' else ', ' + recipient[1]
     return render_template("send_message.html", form=form, forward=True)
 
 
