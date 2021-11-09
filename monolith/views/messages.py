@@ -260,5 +260,5 @@ def notify_msg_reading(message):
         mailserver.quit()
     except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError, smtplib.SMTPConnectError,
             smtplib.SMTPNotSupportedError, smtplib.SMTPSenderRefused, smtplib.SMTPServerDisconnected,
-            smtplib.SMTPHeloError) as e:
+            smtplib.SMTPHeloError, smtplib.SMTPAuthenticationError) as e:
         print("ERROR: " + str(e))

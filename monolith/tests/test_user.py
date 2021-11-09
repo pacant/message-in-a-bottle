@@ -38,7 +38,7 @@ class TestApp(TestBase):
                                   firstname='Prova',
                                   lastname='Prova',
                                   password='1234',
-                                  date_of_birth='01/01/2001'
+                                  date_of_birth='2001-01-01'
                               ),
                               follow_redirects=True)
         self.assertIn(b'Email already in use', reply.data)
@@ -202,7 +202,7 @@ class TestApp(TestBase):
                                   firstname='Prova',
                                   lastname='Prova',
                                   password='1234',
-                                  date_of_birth='01/01/2001'
+                                  date_of_birth='2001-01-01'
                               ),
                               follow_redirects=True)
         self.assertIn(b'You have been suspended!', reply.data)

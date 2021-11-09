@@ -265,7 +265,8 @@ class TestApp(TestBase):
             text='group message',
         )
 
-        reply = self.app.post("/message/send", data=message, follow_redirects=True)
+        reply = self.app.post("/message/send", data=message)
+        self.assertEqual(reply.status, '200 OK')
         self.logout()
 
         self.login(self.receiver, '1234')
