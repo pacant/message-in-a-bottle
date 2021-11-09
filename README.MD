@@ -70,22 +70,18 @@ To setup the environment you have to follow these steps:
 ## Install and run Celery 
 Celery in an asynchronous task queue based on distributed message passing. The tasks are executed concurrently on a single or more worker servers. An intermediary message broker (in this case Redis) oversees passing messages between the application and Celery. In the app, Celery has been used to asynchronously deliver message, notifications and run lottery extractions.
 1. Install Celery: `pip install celery`
-2. Run Celery: `celery -A monolith.background.celery worker -D`
+2. Run Celery: `celery -A monolith.background.celery worker -D`.
+3. To monitor Celery output: `tail -f nohup.out`.
 
 ## Run the application
 To run the application, execute the following commands:
-1. `docker run -d -p 6379:6379 redis` run Redis on Docker in detach mode
-2. `./run.sh` or set the following environment variables:
+1. Run Redis on Docker in detach mode: `docker run -d -p 6379:6379 redis`.
+2. Run the app: `./run.sh` or set the following environment variables:
 ```
 FLASK_APP=monolith
 FLASK_ENV=development
 FLASK_DEBUG=true
 PYTHONPATH=$PWD
-```
-
-To monitor Celery output:
-```bash
-tail -f nohup.out
 ```
 
 ## Run tests
