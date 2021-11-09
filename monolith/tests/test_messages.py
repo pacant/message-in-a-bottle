@@ -226,7 +226,7 @@ class TestApp(TestBase):
 
         message = dict(
             receiver=self.receiver,
-            date='2020-10-26t01:01',
+            date='2020-10-26T01:01',
             text='message forward',
         )
 
