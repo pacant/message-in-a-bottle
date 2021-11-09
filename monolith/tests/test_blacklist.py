@@ -26,7 +26,7 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '200 OK')
         self.assertIn(b'prova1@gmail.com', reply.data)
 
-        reply = self.app.get('/blacklist/remove')
+        reply = self.app.get('/blacklist')
         self.assertIn(b'prova1@gmail.com', reply.data)
 
         reply=self.app.post('/blacklist/remove', data=dict(email=self.receiver), follow_redirects=True)
