@@ -27,8 +27,8 @@ class TestApp(TestBase):
 
         user = "igp12345@gmail.com"
         user_receiver = "igp234@gmail.com"
-        self.register(user, "User", "User", "1234", "01/01/2001")
-        self.register(user_receiver, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
+        self.register(user_receiver, "User", "User", "1234", "2001-01-01")
         self.login(user, "1234")
 
 

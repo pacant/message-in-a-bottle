@@ -10,7 +10,7 @@ class TestApp(TestBase):
 
         user = 'user@example.com'
 
-        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
         self.login(user, "1234")
 
         reply = self.app.get("/mailbox/received")
@@ -24,7 +24,7 @@ class TestApp(TestBase):
 
         user = 'user@example.com'
 
-        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
         self.login(user, "1234")
 
         reply = self.app.get("/mailbox/sent")
@@ -38,7 +38,7 @@ class TestApp(TestBase):
 
         user = 'user@example.com'
 
-        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
         self.login(user, "1234")
 
         reply = self.app.get("/mailbox/draft")
@@ -51,8 +51,8 @@ class TestApp(TestBase):
     def test_mailbox_sent(self):
         user = 'user@example.com'
         user_receiver = 'userrrrr@example.com'
-        self.register(user, "User", "User", "1234", "01/01/2001")
-        self.register(user_receiver, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
+        self.register(user_receiver, "User", "User", "1234", "2001-01-01")
 
         self.login(user, "1234")
 

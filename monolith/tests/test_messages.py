@@ -287,7 +287,7 @@ class TestApp(TestBase):
         from monolith.app import app
 
         user = "igp@gmail.com"
-        self.register(user, "User", "User", "1234", "01-01-2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
         self.login(user, "1234")
         with app.app_context():
             db.session.query(User).filter(User.email == user).update({"points": 20})
@@ -327,7 +327,7 @@ class TestApp(TestBase):
         with app.app_context():
             id = db.session.query(User).filter(User.email == user).first()
 
-        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "2001-01-01")
         self.login(user, "1234")
         date = datetime.datetime.now()
 
