@@ -1,4 +1,3 @@
-from werkzeug.utils import html
 import wtforms as f
 import wtforms.fields.html5 as html5
 from flask_wtf import FlaskForm
@@ -12,9 +11,9 @@ class LoginForm(FlaskForm):
 
 
 class UserForm(FlaskForm):
-    email = html5.EmailField('Email address', validators=[DataRequired(), Email()]) #f.StringField('email', validators=[DataRequired(), Email()])
+    email = html5.EmailField('Email address', validators=[DataRequired(), Email()])
     firstname = f.StringField('First name', validators=[DataRequired()])
     lastname = f.StringField('Last name', validators=[DataRequired()])
     password = f.PasswordField('Password', validators=[DataRequired()])
-    date_of_birth = html5.DateField('Date of birth') #f.DateField('date_of_birth', format='%d/%m/%Y')
+    date_of_birth = html5.DateField('Date of birth')
     display = ['email', 'firstname', 'lastname', 'password', 'date_of_birth']

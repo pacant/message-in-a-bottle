@@ -18,14 +18,14 @@ class TestBase(unittest.TestCase):
     receiver = "prova1@gmail.com"
     other = "prova2@gmail.com"
 
-    def register(self, email, firstname, lastname, password, dateofbirdth):
+    def register(self, email, firstname, lastname, password, dateofbirth):
         return self.app.post("/create_user",
                              data=dict(
                                  email=email,
                                  firstname=firstname,
                                  lastname=lastname,
                                  password=password,
-                                 date_of_birth=dateofbirdth
+                                 date_of_birth=dateofbirth
                              ),
                              follow_redirects=True)
 
@@ -42,33 +42,8 @@ class TestBase(unittest.TestCase):
 
     def logout(self):
         return self.app.get("/logout")
-
-    app.post("/create_user",
-             data=dict(
-                 email=sender,
-                 firstname="Prova",
-                 lastname="Prova",
-                 password="1234",
-                 date_of_birth="01/01/2001"
-             ),
-             follow_redirects=True)
-
-    app.post("/create_user",
-             data=dict(
-                 email=receiver,
-                 firstname="Prova",
-                 lastname="Prova",
-                 password="1234",
-                 date_of_birth="01/01/2001"
-             ),
-             follow_redirects=True)
-
-    app.post("/create_user",
-             data=dict(
-                 email=other,
-                 firstname="Prova",
-                 lastname="Prova",
-                 password="1234",
-                 date_of_birth="01/01/2001"
-             ),
-             follow_redirects=True)
+    
+    def test_user_creation(self):
+        self.register(self.sender, "Prova", "Prova", "1234", "2001-01-01")
+        self.register(self.receiver, "Prova", "Prova", "1234", "2001-01-01")
+        self.register(self.other, "Prova", "Prova", "1234", "2001-01-01")

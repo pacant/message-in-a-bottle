@@ -287,7 +287,7 @@ class TestApp(TestBase):
         from monolith.app import app
 
         user = "igp@gmail.com"
-        self.register(user, "User", "User", "1234", "01/01/2001")
+        self.register(user, "User", "User", "1234", "01-01-2001")
         self.login(user, "1234")
         with app.app_context():
             db.session.query(User).filter(User.email == user).update({"points": 20})
