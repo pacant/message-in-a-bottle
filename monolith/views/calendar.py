@@ -1,13 +1,11 @@
-from datetime import datetime
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint
 from flask_login.utils import login_required
-from monolith.database import  Message, User, db
+from monolith.database import Message, User, db
 from flask.templating import render_template
 from flask_login import current_user
 
-
-
 calendar = Blueprint('calendar', __name__)
+
 
 @ calendar.route("/calendar/sent")
 @ login_required

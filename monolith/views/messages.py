@@ -42,24 +42,10 @@ def send_message():
     else:
         # landing from the recipients page, we want to populate the field with the chosen one
         recipient_message = request.args.items(multi=True)
-        rec_list = []
-
-        for item in recipient_message:
-            item = item[1].strip('\'')
-            rec_list.append(item)
-
-        rec_list[:] = [x for x in rec_list if x]
-        rec_list = list(dict.fromkeys(rec_list))
-
-        recipients = ''
-
-        for i in range(len(rec_list)):
-            if i == (len(rec_list) - 1):
-                recipients = recipients + rec_list[i]
-            else:
-                recipients = recipients + rec_list[i] + ', '
-
-        form = dict(recipient=recipients)
+        form = {'recipient': ''}
+        for recipient in recipient_message:
+            if recipient[1] != '':
+                form['recipient'] += recipient[1] if form['recipient'] == '' else ', ' + recipient[1]
 
         return render_template("send_message.html", form=form)
 
