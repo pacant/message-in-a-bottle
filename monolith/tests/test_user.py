@@ -3,7 +3,6 @@ from time import sleep
 
 from monolith.database import db, User, Message
 from monolith.tests.test_base import TestBase
-from monolith.lottery import increase_trials
 
 
 class TestApp(TestBase):
