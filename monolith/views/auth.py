@@ -1,7 +1,6 @@
 from flask import Blueprint, redirect, render_template, abort, request
 from flask_login import login_user, logout_user
 from flask_login.utils import login_required
-
 from monolith.database import User, db
 from monolith.forms import LoginForm
 

@@ -1,5 +1,4 @@
 from flask_login import LoginManager
-
 from monolith.database import User
 
 login_manager = LoginManager()
