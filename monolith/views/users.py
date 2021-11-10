@@ -103,7 +103,7 @@ def get_user_content_filter_list():
         ).join(UserContentFilter, isouter=True)
     )
     content_filter_list = []
-#                                    'words': result.ContentFilter.words,
+
     for result in results:
         content_filter_list.append({'id': result.ContentFilter.id,
                                     'name': result.ContentFilter.name,
@@ -125,9 +125,6 @@ def get_user_content_filter(id_filter):
     if content_filter is None:
         abort(404)
 
-#   if content_filter.ContentFilter.private and content_filter.UserContentFilter.id_user != current_user.id:
-#       abort(403)
-
     new_user_content_filter = None
     if request.method == 'PUT':
         active = request.form.get('active') == 'true'
@@ -142,7 +139,6 @@ def get_user_content_filter(id_filter):
             content_filter.UserContentFilter.active = active
             db.session.commit()
 
-#            'words': content_filter.ContentFilter.words,
     return {'id': content_filter.ContentFilter.id,
             'name': content_filter.ContentFilter.name,
             'active': True if (content_filter.UserContentFilter and content_filter.UserContentFilter.active) or

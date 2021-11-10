@@ -15,7 +15,7 @@ monolith
 ├── __init__.py
 ├── badwords.txt
 ├── classes
-│   ├── __init__.py
+│   └── __init__.py
 ├── templates
 │   ├── add_to_blacklist.html
 │   ├── blacklist.html

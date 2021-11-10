@@ -1,5 +1,4 @@
 from flask import Flask
-
 from monolith.auth import login_manager
 from monolith.database import ContentFilter, db
 from monolith.views import blueprints
