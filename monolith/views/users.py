@@ -207,7 +207,7 @@ def get_report():
 @ users.route('/report/add', methods=['GET', 'POST'])
 @ login_required
 def report_user():
-    ''' GET: get the list of the users that the user can report 
+    ''' GET: get the list of the users that the user can report
         POST: report a user'''
     if request.method == 'POST':
         report = Reports()

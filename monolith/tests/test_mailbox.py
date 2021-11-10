@@ -74,11 +74,12 @@ class TestApp(TestBase):
         id = 0
         from monolith.app import app
         with app.app_context():
-            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
             count = 0
-            while not msg.delivered and count < 15:
+            while msg is None and count < 15:
                 sleep(2)
                 count += 1
+                msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
             id = msg.id
 
         self.login(user_receiver, "1234")
@@ -111,13 +112,3 @@ class TestApp(TestBase):
         #self.assertIn(b'DraftMessage', reply.data)
 
         self.logout()
-        
-        id = 0
-        from monolith.app import app
-        with app.app_context():
-            msg = db.session.query(Message).filter(Message.text == message['text']).first()
-            count = 0
-            while not msg.delivered and count < 15:
-                sleep(2)
-                count += 1
-            id = msg.id
