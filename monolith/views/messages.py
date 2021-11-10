@@ -266,4 +266,4 @@ def purify_message(msg):
 
 def notify_msg_reading(message):
     ''' Notify the sender by email when the recipient open the message'''
-    send_notification_task.apply_async((message.id, current_user.firstname), eta=datetime.now())
+    send_notification_task.apply_async((message.id, current_user.firstname), eta=datetime.utcnow())

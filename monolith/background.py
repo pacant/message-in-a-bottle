@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 import datetime
 from celery import Celery
 import smtplib
@@ -104,6 +104,7 @@ def search_for_pending_messages():
     db.init_app(app)
 
     with app.app_context():
-        msgs = db.session.query(Message).filter(Message.delivered.is_(False), Message.blacklisted.is_(False), Message.date_delivery < datetime.datetime.now()).all()
+        msgs = db.session.query(Message).filter(Message.delivered.is_(False), Message.blacklisted.is_(
+            False), Message.date_delivery < datetime.datetime.now()).all()
         for msg in msgs:
             send_message.apply_async((msg.id,), eta=Message.date_delivery)

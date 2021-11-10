@@ -376,34 +376,15 @@
           return false;
         })
         .on("click", ".event", function () {
-          var $t = $(this),
-            index = +$t.attr("data-index"),
-            haspop = $t.data("popover"),
-            data,
-            time;
-
-          if (haspop || isNaN(index)) {
-            return true;
-          }
-          data = options.data[index];
-          time = data.start.toTimeString();
-          if (time && data.end) {
-            time = time + " - " + data.end.toTimeString();
-          }
-          $t.data("popover", true);
-          $t.popover({
-            content: data.text,
-            html: true,
-            placement: "auto left",
-          }).popover("toggle");
-          return false;
+          var $t = $(this)
+          window.location.href = "/message/"+$t[0].id;
         });
       function dayAddEvent(index, event) {
         if (!!event.allDay) {
           monthAddEvent(index, event);
           return;
         }
-        var $event = $("<div/>", { class: "event", text: event.title, title: event.title, "data-index": index }),
+        var $event = $("<div/>", { class: "event", text: event.title, title: event.title, "data-index": index, "id": event.content }),
           start = event.start,
           end = event.end || start,
           time = event.start.toTimeString(),
@@ -428,7 +409,7 @@
       }
 
       function monthAddEvent(index, event) {
-        var $event = $("<div/>", { class: "event", text: event.title, title: event.title, "data-index": index }),
+        var $event = $("<div/>", { class: "event", text: event.title, title: event.title, "data-index": index, "id": event.content }),
           e = new Date(event.start),
           dateclass = e.toDateCssClass(),
           day = $("." + e.toDateCssClass()),
@@ -589,12 +570,12 @@
   data =[];
   {%if msgs_rcv%}
   {% for i in msgs_rcv %}
-    data.push({ title: 'message from'+" {{i[1].email}}", start: new Date("{{i[0].date_delivery}}"), end: new Date("{{i[0].date_send}}"), allDay: 1});
+    data.push({ title: 'message from'+" {{i[1].email}}", start: new Date("{{i[0].date_delivery}}"), end: new Date("{{i[0].date_send}}"), allDay: 1, content:"{{i[0].id}}"});
     {% endfor %}
   {%endif%}
   {%if msgs_sent%}
   {% for i in msgs_sent%}
-    data.push({ title: 'message to'+" {{i[1].email}}", start: new Date("{{i[0].date_send}}"), end: new Date("{{i[0].date_send}}"), allDay: 1});
+    data.push({ title: 'message to'+" {{i[1].email}}", start: new Date("{{i[0].date_send}}"), end: new Date("{{i[0].date_send}}"), allDay: 1, content:"{{i[0].id}}"});
     {% endfor %}
   {%endif%}
 
