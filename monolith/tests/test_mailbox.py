@@ -1,4 +1,4 @@
-import unittest
+from time import sleep
 
 from monolith.tests.test_base import TestBase
 from monolith.database import db, User, Message
@@ -70,6 +70,17 @@ class TestApp(TestBase):
         self.assertIn(b'Test message x', reply.data)
 
         self.logout()
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
+
         self.login(user_receiver, "1234")
 
         reply = self.app.get("/mailbox/received", follow_redirects=True)
@@ -100,3 +111,13 @@ class TestApp(TestBase):
         #self.assertIn(b'DraftMessage', reply.data)
 
         self.logout()
+        
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id

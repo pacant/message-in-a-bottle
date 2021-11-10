@@ -1,6 +1,5 @@
 import datetime
-import pytest
-import unittest
+from time import sleep
 import wtforms as f
 
 from monolith.database import db, User, Message
@@ -45,6 +44,16 @@ class TestApp(TestBase):
                               data=message)
         self.assertEqual(reply.status, '200 OK')
         self.assertIn(b"Message sent correctly!", reply.data)
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
 
         self.logout()
 
@@ -93,10 +102,16 @@ class TestApp(TestBase):
                               follow_redirects=True)
         self.assertEqual(reply.status, '200 OK')
 
+        
         id = 0
         from monolith.app import app
         with app.app_context():
-            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
 
         reply = self.app.get("/message/" + str(id))
         self.assertEqual(reply.status, '200 OK')
@@ -155,10 +170,16 @@ class TestApp(TestBase):
                               follow_redirects=True)
         self.assertEqual(reply.status, '200 OK')
 
+        
         id = 0
         from monolith.app import app
         with app.app_context():
-            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
 
         self.logout()
 
@@ -209,10 +230,16 @@ class TestApp(TestBase):
 
             self.logout()
 
+            
             id = 0
             from monolith.app import app
             with app.app_context():
-                id = db.session.query(Message).filter(Message.text == 'test_send_image').first().id
+                msg = db.session.query(Message).filter(Message.text == message['text']).first()
+                count = 0
+                while not msg.delivered and count < 15:
+                    sleep(2)
+                    count += 1
+                id = msg.id
 
             self.login(self.receiver, '1234')
 
@@ -234,15 +261,20 @@ class TestApp(TestBase):
 
         self.logout()
 
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
+
         self.login(self.receiver, '1234')
 
         reply = self.app.get('/mailbox/received')
         self.assertIn(b'message forward', reply.data)
-
-        id = 0
-        from monolith.app import app
-        with app.app_context():
-            id = db.session.query(Message).filter(Message.text == message['text']).first().id
 
         reply = self.app.get('message/recipients/' + str(id))
         self.assertIn(b'Search recipient', reply.data)
@@ -268,6 +300,16 @@ class TestApp(TestBase):
         reply = self.app.post("/message/send", data=message)
         self.assertEqual(reply.status, '200 OK')
         self.logout()
+
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
 
         self.login(self.receiver, '1234')
 
@@ -341,14 +383,21 @@ class TestApp(TestBase):
                               data=message)
 
         self.logout()
-        self.login(self.receiver, "1234")
+
         id = 0
+        from monolith.app import app
+        with app.app_context():
+            msg = db.session.query(Message).filter(Message.text == message['text']).first()
+            count = 0
+            while not msg.delivered and count < 15:
+                sleep(2)
+                count += 1
+            id = msg.id
+        
+        self.login(self.receiver, "1234")
 
         reply = self.app.get("/mailbox/received")
         self.assertIn(b"message delete", reply.data)
-
-        with app.app_context():
-            id = db.session.query(Message).filter(Message.text == message['text']).first().id
 
         reply = self.app.post("/message/" + str(id) + "/delete", follow_redirects=True)
 
