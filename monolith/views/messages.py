@@ -151,8 +151,7 @@ def view_message(message_id):
                                sender=message.User,
                                recipient=recipient,
                                message=message.Message,
-                               images=images,
-                               date='-')
+                               images=images)
 
 
 @ messages.route("/message/withdraw/<id>", methods=['POST'])
