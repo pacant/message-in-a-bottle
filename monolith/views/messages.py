@@ -208,6 +208,9 @@ def send_message_async(data):
     if not result:
         send_message_task.apply_async((id_message,), eta=date)
     else:
+        msg = db.session.query(Message).filter(Message.id == id_message).first()
+        msg.blacklisted = True
+        db.session.commit()
         return
 
 

@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+import datetime
 from celery import Celery
 import smtplib
 from monolith.database import User, Message, db
@@ -80,7 +82,8 @@ def send_notification(message_id, current_user_firstname):
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(30.0, increase_trials, expires=10)
+    sender.add_periodic_task(timedelta(seconds=30), increase_trials, expires=10)
+    sender.add_periodic_task(timedelta(minutes=30), search_for_pending_messages, expires=10)
 
 
 @celery.task
@@ -92,3 +95,15 @@ def increase_trials():
     with app.app_context():
         db.session.query(User).update({"trials": User.trials + 1})
         db.session.commit()
+
+
+@celery.task
+def search_for_pending_messages():
+    from monolith.app import create_app
+    app = create_app()
+    db.init_app(app)
+
+    with app.app_context():
+        msgs = db.session.query(Message).filter(Message.delivered.is_(False), Message.blacklisted.is_(False), Message.date_delivery < datetime.datetime.now()).all()
+        for msg in msgs:
+            send_message.apply_async((msg.id,), eta=Message.date_delivery)
