@@ -305,16 +305,14 @@ class TestApp(TestBase):
         self.assertEqual(reply.status, '200 OK')
         self.logout()
 
-        id = 0
         from monolith.app import app
         with app.app_context():
-            msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
+            msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).all()
             count = 0
-            while msg is None and count < 15:
+            while len(msg) < 2 and count < 30:
                 sleep(2)
                 count += 1
-                msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
-            id = msg.id
+                msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).all()
 
         self.login(self.receiver, '1234')
 

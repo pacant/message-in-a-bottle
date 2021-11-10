@@ -1,4 +1,5 @@
 import datetime
+from time import sleep
 
 from monolith.database import db, User, Message
 from monolith.tests.test_base import TestBase
@@ -95,7 +96,13 @@ class TestApp(TestBase):
         id = 0
         from monolith.app import app
         with app.app_context():
-            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+            msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
+            count = 0
+            while msg is None and count < 15:
+                sleep(2)
+                count += 1
+                msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
+            id = msg.id
 
         reply = self.app.get("/message/" + str(id))
         self.assertEqual(reply.status, '200 OK')
