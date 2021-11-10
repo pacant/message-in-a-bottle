@@ -79,7 +79,8 @@ class TestApp(TestBase):
             while msg is None and count < 15:
                 sleep(2)
                 count += 1
-                msg = db.session.query(Message).filter(Message.text == message['text'], Message.delivered.is_(True)).first()
+                msg = db.session.query(Message).filter(
+                    Message.text == message['text'], Message.delivered.is_(True)).first()
             id = msg.id
 
         self.login(user_receiver, "1234")
