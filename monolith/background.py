@@ -46,3 +46,38 @@ def send_message(id_message):
         app = _APP
 
     return []
+
+
+@celery.task
+def send_notification(message_id, current_user_firstname):
+    global _APP
+    # lazy init
+    if _APP is None:
+        from monolith.app import create_app
+        app = create_app()
+        db.init_app(app)
+
+        with app.app_context():
+            message = db.session.query(Message, User).filter(
+                Message.id == int(message_id)
+            ).join(User, Message.id_sender == User.id).first()
+            message.Message.read = True
+            db.session.commit()
+            try:
+                mailserver = smtplib.SMTP('smtp.office365.com', 587)
+                mailserver.ehlo()
+                mailserver.starttls()
+                mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
+                mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:' + message.User.email +
+                                    '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n' +
+                                    current_user_firstname +
+                                    ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
+                mailserver.quit()
+            except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError, smtplib.SMTPConnectError,
+                    smtplib.SMTPNotSupportedError, smtplib.SMTPSenderRefused, smtplib.SMTPServerDisconnected,
+                    smtplib.SMTPHeloError, smtplib.SMTPAuthenticationError) as e:
+                print("ERROR: " + str(e))
+    else:
+        app = _APP
+
+    return []

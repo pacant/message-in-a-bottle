@@ -19,14 +19,19 @@ class TestApp(TestBase):
         message = dict(
             receiver=self.receiver,
             date='2020-10-26T01:01',
-            text='Testmessage1',
+            text='test_draft_2020-10-26T01:01',
             draft = True)
 
         reply = self.app.post("/draft",
                          data=message, follow_redirects = True)
-        self.assertIn(b"Testmessage", reply.data)
+        self.assertIn(message['text'].encode('utf-8'), reply.data)
 
-        reply = self.app.get("/message/send/" + str(2), follow_redirects=True)
-        self.assertIn(b"Testmessage1", reply.data)
-        reply = self.app.post("/message/send/" + str(2), data=message)
+        id = 0
+        from monolith.app import app
+        with app.app_context():
+            id = db.session.query(Message).filter(Message.text == message['text']).first().id
+
+        reply = self.app.get("/message/send/" + str(id), follow_redirects=True)
+        self.assertIn(message['text'].encode('utf-8'), reply.data)
+        reply = self.app.post("/message/send/" + str(id), data=message)
         self.logout()

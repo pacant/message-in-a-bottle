@@ -117,8 +117,3 @@ class UserContentFilter(db.Model):
 
     def __init__(self, *args, **kw):
         super(UserContentFilter, self).__init__(*args, **kw)
-
-    def create_all():
-        new_user_content_filter = UserContentFilter()
-        db.session.add(new_user_content_filter)
-        db.session.commit()

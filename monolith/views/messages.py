@@ -6,10 +6,10 @@ from dateutil import parser
 from flask.templating import render_template
 from flask_login import current_user
 from monolith.background import send_message as send_message_task
+from monolith.background import send_notification as send_notification_task
 import base64
 import re
 import json
-import smtplib
 
 messages = Blueprint('messages', __name__)
 
@@ -136,7 +136,7 @@ def view_message(message_id):
         ).first()
 
         if int(message.Message.id_receiver) == current_user.id and not message.Message.read:
-            notify_msg_reading(message)
+            notify_msg_reading(message.Message)
 
         # if message contains bad words they are not showed
         if int(message.Message.id_sender) != current_user.id:
@@ -263,19 +263,4 @@ def purify_message(msg):
 
 def notify_msg_reading(message):
     ''' Notify the sender by email when the recipient open the message'''
-    message.Message.read = True
-    db.session.commit()
-    try:
-        mailserver = smtplib.SMTP('smtp.office365.com', 587)
-        mailserver.ehlo()
-        mailserver.starttls()
-        mailserver.login('squad03MIB@outlook.com', 'StefanoForti')
-        mailserver.sendmail('squad03MIB@outlook.com', message.User.email, 'To:' + message.User.email +
-                            '\nFrom:squad03MIB@outlook.com\nSubject:Message reading notification\n\n' +
-                            current_user.firstname +
-                            ' have just read your message in a bottle.\n\nGreetings,\nThe MIB team')
-        mailserver.quit()
-    except (smtplib.SMTPRecipientsRefused, smtplib.SMTPDataError, smtplib.SMTPConnectError,
-            smtplib.SMTPNotSupportedError, smtplib.SMTPSenderRefused, smtplib.SMTPServerDisconnected,
-            smtplib.SMTPHeloError, smtplib.SMTPAuthenticationError) as e:
-        print("ERROR: " + str(e))
+    send_notification_task.apply_async((message.id, current_user.firstname), eta=datetime.now())
