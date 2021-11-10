@@ -570,7 +570,7 @@
   data =[];
   {%if msgs_rcv%}
   {% for i in msgs_rcv %}
-    data.push({ title: 'message from'+" {{i[1].email}}", start: new Date("{{i[0].date_delivery}}"), end: new Date("{{i[0].date_send}}"), allDay: 1, content:"{{i[0].id}}"});
+    data.push({ title: 'message from'+" {{i[1].email}}", start: new Date("{{i[0].date_delivery}}"), end: new Date("{{i[0].date_delivery}}"), allDay: 1, content:"{{i[0].id}}"});
     {% endfor %}
   {%endif%}
   {%if msgs_sent%}
