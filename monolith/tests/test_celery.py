@@ -9,7 +9,7 @@ from monolith.app import app as tested_app
 from monolith.database import db, User, Message
 from monolith.views.messages import draft
 from monolith.lottery import increase_trials
-from monolith.background import send_message
+from monolith.background import send_message, send_notification
 
 class TestApp(TestBase):
     def test_increase(self):
@@ -47,5 +47,6 @@ class TestApp(TestBase):
             id = db.session.query(Message).filter(Message.text == message['text']).first().id
 
         send_message.apply((id,))
+        send_notification.apply((id,"Prova"))
 
         self.logout()
