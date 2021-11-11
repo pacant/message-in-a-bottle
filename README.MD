@@ -67,11 +67,6 @@ To setup the environment you have to follow these steps:
 3. Now, you have to activate it, by executing the command `source venv/bin/activate` (you have to execute it every time you open a new terminal).
 4. You have to install all requirements, let's do that with `pip install -r requirements.txt`.
 
-## Install and run Celery 
-Celery in an asynchronous task queue based on distributed message passing. The tasks are executed concurrently on a single or more worker servers. An intermediary message broker (in this case Redis) oversees passing messages between the application and Celery. In the app, Celery has been used to asynchronously deliver message, notifications and run lottery extractions.
-1. Install Celery: `pip install celery`
-2. Run Celery: `celery -A monolith.background.celery worker -D`.
-3. To monitor Celery output: `tail -f nohup.out`.
 
 ## Run the application
 To run the application, execute the following commands:
