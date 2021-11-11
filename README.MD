@@ -1,8 +1,7 @@
 
 
 # My Message In A Bottle
-[![Build Status](https://app.travis-ci.com/pacant/message-in-a-bottle.svg?token=LssUpGYsSjqQrN4qWte3&branch=main)](https://app.travis-ci.com/pacant/message-in-a-bottle) [![Coverage Status](https://coveralls.io/repos/github/fcarli3/message-in-a-bottle/badge.svg?branch=main&t=vyPoTB)](https://coveralls.io/github/fcarli3/message-in-a-bottle?branch=main)
-
+[![Build Status](https://app.travis-ci.com/pacant/message-in-a-bottle.svg?token=LssUpGYsSjqQrN4qWte3&branch=main)](https://app.travis-ci.com/pacant/message-in-a-bottle) [![Coverage Status](https://coveralls.io/repos/github/pacant/message-in-a-bottle/badge.svg?branch=main)](https://coveralls.io/github/pacant/message-in-a-bottle?branch=main)
 ## Directory Structure
 ```
 monolith
